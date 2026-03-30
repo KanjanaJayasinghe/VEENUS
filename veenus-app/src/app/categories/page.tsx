@@ -1,17 +1,21 @@
-import { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { ProductCard, SectionHeader } from '@/components';
-import { categories, products } from '@/data';
-
-export const metadata: Metadata = {
-  title: 'Shop All Categories | Veenus Kleding',
-  description: 'Browse our complete collection of luxury fashion. From elegant dresses to impeccable suits, find your perfect piece.',
-};
+import { useStore } from '@/lib/StoreProvider';
 
 export default function CategoriesPage() {
+  const { categories, products, loading } = useStore();
+
   return (
     <>
+      {loading && (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-10 h-10 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+      {!loading && (<>
       {/* Hero Section */}
       <section className="relative h-[50vh] sm:h-[60vh] min-h-[350px] sm:min-h-[400px] md:min-h-[500px] flex items-center justify-center overflow-hidden">
         {/* Background */}
@@ -108,6 +112,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       </section>
+      </>)}
     </>
   );
 }

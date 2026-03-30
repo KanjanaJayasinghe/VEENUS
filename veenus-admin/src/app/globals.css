@@ -2,9 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+[data-theme="dark"] {
   --sidebar-width: 260px;
   --header-height: 64px;
+  --bg-body: #090909;
+  --bg-sidebar: #0f0f0f;
+  --bg-card: #161616;
+  --bg-input: #0f0f0f;
+  --bg-hover: #1a1a1a;
+  --border: #222222;
+  --border-light: #1a1a1a;
+  --border-hover: #333333;
+  --text-primary: #e5e5e5;
+  --text-secondary: #999999;
+  --text-muted: #666666;
+  --text-dim: #555555;
+  --text-faint: #444444;
+  --text-heading: #cccccc;
+  --text-label: #888888;
+  --scrollbar-track: #0f0f0f;
+  --scrollbar-thumb: #333333;
+  --scrollbar-hover: #555555;
+  --selection-bg: rgba(184, 134, 11, 0.3);
+  --selection-color: #F5E6A3;
+  --tooltip-bg: #161616;
+  --tooltip-border: #333333;
+}
+
+[data-theme="light"] {
+  --bg-body: #f5f5f5;
+  --bg-sidebar: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #f9f9f9;
+  --bg-hover: #f0f0f0;
+  --border: #e0e0e0;
+  --border-light: #eeeeee;
+  --border-hover: #cccccc;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #777777;
+  --text-dim: #999999;
+  --text-faint: #bbbbbb;
+  --text-heading: #333333;
+  --text-label: #666666;
+  --scrollbar-track: #f0f0f0;
+  --scrollbar-thumb: #cccccc;
+  --scrollbar-hover: #aaaaaa;
+  --selection-bg: rgba(184, 134, 11, 0.2);
+  --selection-color: #7A5A07;
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #e0e0e0;
 }
 
 * {
@@ -18,8 +66,8 @@ html {
 }
 
 body {
-  background: #090909;
-  color: #e5e5e5;
+  background: var(--bg-body);
+  color: var(--text-primary);
   font-family: var(--font-inter), 'Inter', sans-serif;
   min-height: 100vh;
 }
@@ -30,31 +78,31 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f0f0f;
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-hover);
 }
 
 /* ── Selection ── */
 ::selection {
-  background: rgba(184, 134, 11, 0.3);
-  color: #F5E6A3;
+  background: var(--selection-bg);
+  color: var(--selection-color);
 }
 
 /* ── Admin Card ── */
 .admin-card {
-  background: #161616;
-  border: 1px solid #222;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   transition: all 0.2s ease;
 }
 .admin-card:hover {
-  border-color: #333;
+  border-color: var(--border-hover);
 }
 
 /* ── Gold Gradient Text ── */
@@ -127,11 +175,11 @@ body {
 /* ── Form inputs ── */
 .admin-input {
   width: 100%;
-  background: #0f0f0f;
-  border: 1px solid #222;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
-  color: #e5e5e5;
+  color: var(--text-primary);
   font-size: 14px;
   transition: border-color 0.2s ease;
   outline: none;
@@ -141,17 +189,17 @@ body {
   box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.1);
 }
 .admin-input::placeholder {
-  color: #555;
+  color: var(--text-dim);
 }
 
 /* ── Admin select ── */
 .admin-select {
   width: 100%;
-  background: #0f0f0f;
-  border: 1px solid #222;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
-  color: #e5e5e5;
+  color: var(--text-primary);
   font-size: 14px;
   transition: border-color 0.2s ease;
   outline: none;
@@ -169,11 +217,11 @@ body {
 /* ── Admin textarea ── */
 .admin-textarea {
   width: 100%;
-  background: #0f0f0f;
-  border: 1px solid #222;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
-  color: #e5e5e5;
+  color: var(--text-primary);
   font-size: 14px;
   transition: border-color 0.2s ease;
   outline: none;
@@ -258,21 +306,21 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #888;
-  border-bottom: 1px solid #222;
-  background: #0f0f0f;
+  color: var(--text-label);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-input);
 }
 .admin-table tbody td {
   padding: 14px 16px;
   font-size: 14px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--border-light);
   vertical-align: middle;
 }
 .admin-table tbody tr {
   transition: background 0.15s ease;
 }
 .admin-table tbody tr:hover {
-  background: #1a1a1a;
+  background: var(--bg-hover);
 }
 
 /* ── Tab Navigation ── */
@@ -316,15 +364,15 @@ body {
   padding: 0 10px;
   border-radius: 8px;
   font-size: 14px;
-  color: #888;
+  color: var(--text-label);
   background: transparent;
-  border: 1px solid #222;
+  border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .pagination-btn:hover {
-  background: #1a1a1a;
-  color: #e5e5e5;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 .pagination-btn.active {
   background: rgba(184, 134, 11, 0.15);

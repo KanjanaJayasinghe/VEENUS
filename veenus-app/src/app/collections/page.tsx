@@ -1,13 +1,22 @@
-import { Metadata } from 'next';
-import { CollectionCard, SectionHeader } from '@/components';
-import { collections } from '@/data';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Collections | Veenus Kleding',
-  description: 'Explore our curated collections of luxury fashion. Each collection tells a unique story of elegance and craftsmanship.',
-};
+import { CollectionCard, SectionHeader } from '@/components';
+import { useStore } from '@/lib/StoreProvider';
 
 export default function CollectionsPage() {
+  const { collections, loading } = useStore();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border border-gold-500/30 border-t-gold-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-luxury-cream/40 tracking-widest text-sm uppercase">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Hero Section */}

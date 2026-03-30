@@ -1,28 +1,57 @@
 'use client';
 
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductCard } from '@/components';
-import { Product } from '@/types';
+import { useStore } from '@/lib/StoreProvider';
+import { getProductBySlug } from '@/lib/firestore';
 
-interface ProductDetailClientProps {
-  product: Product;
-  relatedProducts: Product[];
-}
+export default function ProductDetailClient() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const { products, loading } = useStore();
 
-export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState(0);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-LK', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'LKR',
       minimumFractionDigits: 0,
     }).format(price);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border border-gold-500/30 border-t-gold-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-luxury-cream/40 tracking-widest text-sm uppercase">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const product = getProductBySlug(products, slug);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="font-display text-4xl text-luxury-cream mb-4">Product Not Found</h1>
+          <Link href="/categories" className="btn-outline">Browse Products</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const relatedProducts = products
+    .filter((p) => p.category.id === product.category.id && p.id !== product.id)
+    .slice(0, 4);
 
   return (
     <>

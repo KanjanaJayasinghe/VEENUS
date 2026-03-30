@@ -1,11 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { customers, orders } from '@/data';
+import { useState, useEffect } from 'react';
+import { getCustomers, getOrders } from '@/lib/firestore';
+import { customers as staticCustomers, orders as staticOrders } from '@/data';
+import { Customer, Order } from '@/types';
 
 export default function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'orders' | 'spent' | 'recent'>('recent');
+
+  useEffect(() => {
+    Promise.all([getCustomers(), getOrders()]).then(([custData, orderData]) => {
+      setCustomers(custData);
+      setOrders(orderData);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed, using static data:', err);
+      setCustomers(staticCustomers);
+      setOrders(staticOrders);
+      setLoading(false);
+    });
+  }, []);
 
   const filteredCustomers = customers
     .filter((c) =>
@@ -28,28 +46,37 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p className="text-sm text-[var(--text-muted)]">Loading customers...</p>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Header */}
       <div>
-        <h2 className="text-xl font-semibold text-[#e5e5e5]">Customers</h2>
-        <p className="text-sm text-[#666] mt-0.5">Manage and view customer information</p>
+        <h2 className="text-xl font-semibold text-[var(--text-primary)]">Customers</h2>
+        <p className="text-sm text-[var(--text-muted)] mt-0.5">Manage and view customer information</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Total Customers</p>
-          <p className="text-2xl font-bold text-[#e5e5e5] mt-1">{customers.length}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Total Customers</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{customers.length}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Total Revenue</p>
-          <p className="text-2xl font-bold text-gradient-gold mt-1">€{totalCustomerRevenue.toLocaleString()}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Total Revenue</p>
+          <p className="text-2xl font-bold text-gradient-gold mt-1">LKR {totalCustomerRevenue.toLocaleString()}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Avg Customer Value</p>
-          <p className="text-2xl font-bold text-gold-400 mt-1">€{Math.round(avgCustomerValue).toLocaleString()}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Avg Customer Value</p>
+          <p className="text-2xl font-bold text-gold-400 mt-1">LKR {Math.round(avgCustomerValue).toLocaleString()}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Repeat Customers</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Repeat Customers</p>
           <p className="text-2xl font-bold text-green-400 mt-1">
             {customers.filter((c) => c.totalOrders > 5).length}
           </p>
@@ -68,7 +95,7 @@ export default function CustomersPage() {
               className="admin-input"
             />
           </div>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="admin-select w-44">
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="admin-select w-full sm:w-44">
             <option value="recent">Most Recent</option>
             <option value="name">Name A-Z</option>
             <option value="orders">Most Orders</option>
@@ -106,22 +133,22 @@ export default function CustomersPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium text-[#e5e5e5]">{customer.name}</p>
+                            <p className="text-sm font-medium text-[var(--text-primary)]">{customer.name}</p>
                             {isVip && <span className="text-xs text-gold-400">★ VIP</span>}
                           </div>
-                          <p className="text-xs text-[#555]">{customer.email}</p>
+                          <p className="text-xs text-[var(--text-dim)]">{customer.email}</p>
                         </div>
                       </div>
                     </td>
                     <td>
                       <div>
-                        <p className="text-sm text-[#ccc]">{customer.city}</p>
-                        <p className="text-xs text-[#555]">{customer.country}</p>
+                        <p className="text-sm text-[var(--text-heading)]">{customer.city}</p>
+                        <p className="text-xs text-[var(--text-dim)]">{customer.country}</p>
                       </div>
                     </td>
-                    <td className="text-sm text-[#999]">{customer.totalOrders}</td>
-                    <td className="text-sm font-medium text-gold-400">€{customer.totalSpent.toLocaleString()}</td>
-                    <td className="text-sm text-[#999]">
+                    <td className="text-sm text-[var(--text-secondary)]">{customer.totalOrders}</td>
+                    <td className="text-sm font-medium text-gold-400">LKR {customer.totalSpent.toLocaleString()}</td>
+                    <td className="text-sm text-[var(--text-secondary)]">
                       {new Date(customer.createdAt).toLocaleDateString('en-GB', {
                         day: '2-digit', month: 'short', year: 'numeric',
                       })}
@@ -142,6 +169,8 @@ export default function CustomersPage() {
           </table>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

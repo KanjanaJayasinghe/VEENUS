@@ -1,14 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { orders } from '@/data';
-import { OrderStatus } from '@/types';
+import { getOrders } from '@/lib/firestore';
+import { orders as staticOrders } from '@/data';
+import { OrderStatus, Order } from '@/types';
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPayment, setFilterPayment] = useState<string>('all');
+
+  useEffect(() => {
+    getOrders().then((data) => {
+      setOrders(data);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed, using static data:', err);
+      setOrders(staticOrders);
+      setLoading(false);
+    });
+  }, []);
 
   const filteredOrders = orders.filter((o) => {
     const matchesSearch =
@@ -42,30 +56,39 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {loading && (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p className="text-sm text-[var(--text-muted)]">Loading orders...</p>
+          </div>
+        </div>
+      )}
+      {!loading && (<>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#e5e5e5]">All Orders</h2>
-          <p className="text-sm text-[#666] mt-0.5">{orders.length} total orders</p>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">All Orders</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">{orders.length} total orders</p>
         </div>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Total Orders</p>
-          <p className="text-2xl font-bold text-[#e5e5e5] mt-1">{filteredOrders.length}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Total Orders</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{filteredOrders.length}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Total Revenue</p>
-          <p className="text-2xl font-bold text-gradient-gold mt-1">€{totalRevenue.toLocaleString()}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Total Revenue</p>
+          <p className="text-2xl font-bold text-gradient-gold mt-1">LKR {totalRevenue.toLocaleString()}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Avg Order Value</p>
-          <p className="text-2xl font-bold text-gold-400 mt-1">€{Math.round(avgOrderValue).toLocaleString()}</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Avg Order Value</p>
+          <p className="text-2xl font-bold text-gold-400 mt-1">LKR {Math.round(avgOrderValue).toLocaleString()}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs text-[#666] uppercase tracking-wider">Pending</p>
+          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Pending</p>
           <p className="text-2xl font-bold text-yellow-400 mt-1">
             {orders.filter((o) => o.status === 'pending').length}
           </p>
@@ -87,7 +110,7 @@ export default function OrdersPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="admin-select w-44"
+            className="admin-select w-full sm:w-44"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -101,7 +124,7 @@ export default function OrdersPage() {
           <select
             value={filterPayment}
             onChange={(e) => setFilterPayment(e.target.value)}
-            className="admin-select w-44"
+            className="admin-select w-full sm:w-44"
           >
             <option value="all">All Payments</option>
             <option value="pending">Pending</option>
@@ -136,21 +159,21 @@ export default function OrdersPage() {
                   </td>
                   <td>
                     <div>
-                      <p className="text-sm font-medium text-[#e5e5e5]">{order.customer.name}</p>
-                      <p className="text-xs text-[#555]">{order.customer.email}</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">{order.customer.name}</p>
+                      <p className="text-xs text-[var(--text-dim)]">{order.customer.email}</p>
                     </div>
                   </td>
-                  <td className="text-sm text-[#999]">
+                  <td className="text-sm text-[var(--text-secondary)]">
                     {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
                   </td>
-                  <td className="text-sm font-medium text-[#e5e5e5]">€{order.total.toLocaleString()}</td>
+                  <td className="text-sm font-medium text-[var(--text-primary)]">LKR {order.total.toLocaleString()}</td>
                   <td>
                     <span className={`badge ${statusColors[order.status]}`}>{order.status}</span>
                   </td>
                   <td>
                     <span className={`badge ${paymentColors[order.paymentStatus]}`}>{order.paymentStatus}</span>
                   </td>
-                  <td className="text-sm text-[#999]">
+                  <td className="text-sm text-[var(--text-secondary)]">
                     {new Date(order.createdAt).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
@@ -160,7 +183,7 @@ export default function OrdersPage() {
                   <td>
                     <Link
                       href={`/orders/${order.id}`}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#222] transition-colors text-[#888] hover:text-gold-400"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--border)] transition-colors text-[var(--text-label)] hover:text-gold-400"
                       title="View Details"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -177,10 +200,11 @@ export default function OrdersPage() {
 
         {filteredOrders.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-[#555] text-sm">No orders found matching your criteria.</p>
+            <p className="text-[var(--text-dim)] text-sm">No orders found matching your criteria.</p>
           </div>
         )}
       </div>
+      </>)}
     </div>
   );
 }

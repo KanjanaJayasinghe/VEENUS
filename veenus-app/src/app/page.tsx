@@ -1,11 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { HeroSection, ProductCard, CollectionCard, CategoryCard, SectionHeader } from '@/components';
-import { categories, collections, getFeaturedProducts, getNewArrivals } from '@/data';
+import { useStore } from '@/lib/StoreProvider';
+import { getFeaturedProducts, getNewArrivals } from '@/lib/firestore';
 
 export default function Home() {
-  const featuredProducts = getFeaturedProducts();
-  const newArrivals = getNewArrivals();
+  const { products, categories, collections } = useStore();
+  const featuredProducts = getFeaturedProducts(products);
+  const newArrivals = getNewArrivals(products);
 
   return (
     <>
@@ -49,7 +53,9 @@ export default function Home() {
             title="Noir Elegance"
             description="A celebration of timeless black, reimagined for the modern connoisseur of luxury"
           />
-          <CollectionCard collection={collections[0]} size="large" />
+          {collections[0] && (
+            <CollectionCard collection={collections[0]} size="large" />
+          )}
         </div>
       </section>
 

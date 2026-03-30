@@ -1,13 +1,45 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { products } from '@/data';
+import { getProducts, deleteProduct } from '@/lib/firestore';
+import { products as staticProducts } from '@/data';
+import { Product } from '@/types';
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+
+  useEffect(() => {
+    getProducts().then((data) => {
+      setProducts(data.products);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed, using static data:', err);
+      setProducts(staticProducts);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    await deleteProduct(id);
+    setProducts(products.filter((p) => p.id !== id));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm text-[var(--text-muted)]">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -30,8 +62,8 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#e5e5e5]">All Products</h2>
-          <p className="text-sm text-[#666] mt-0.5">{products.length} products in catalogue</p>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">All Products</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">{products.length} products in catalogue</p>
         </div>
         <Link href="/products/new" className="btn-gold">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +88,7 @@ export default function ProductsPage() {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="admin-select w-48"
+            className="admin-select w-full sm:w-48"
           >
             <option value="all">All Categories</option>
             {categoryOptions.map((cat) => (
@@ -66,7 +98,7 @@ export default function ProductsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="admin-select w-40"
+            className="admin-select w-full sm:w-40"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -96,7 +128,7 @@ export default function ProductsPage() {
                 <tr key={product.id}>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-[#1a1a1a] overflow-hidden flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-[var(--bg-hover)] overflow-hidden flex-shrink-0">
                         <img
                           src={product.images[0]}
                           alt={product.name}
@@ -104,20 +136,20 @@ export default function ProductsPage() {
                         />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-[#e5e5e5]">{product.name}</p>
-                        <p className="text-xs text-[#555]">{product.shortDescription}</p>
+                        <p className="text-sm font-medium text-[var(--text-primary)]">{product.name}</p>
+                        <p className="text-xs text-[var(--text-dim)]">{product.shortDescription}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="text-sm text-[#999] font-mono">{product.sku}</td>
+                  <td className="text-sm text-[var(--text-secondary)] font-mono">{product.sku}</td>
                   <td>
                     <span className="badge badge-gold">{product.category.name}</span>
                   </td>
                   <td>
                     <div>
-                      <span className="text-sm font-medium text-[#e5e5e5]">€{product.price.toLocaleString()}</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">LKR {product.price.toLocaleString()}</span>
                       {product.originalPrice && (
-                        <span className="text-xs text-[#555] line-through ml-2">€{product.originalPrice.toLocaleString()}</span>
+                        <span className="text-xs text-[var(--text-dim)] line-through ml-2">LKR {product.originalPrice.toLocaleString()}</span>
                       )}
                     </div>
                   </td>
@@ -141,7 +173,7 @@ export default function ProductsPage() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/products/${product.slug}`}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#222] transition-colors text-[#888] hover:text-gold-400"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--border)] transition-colors text-[var(--text-label)] hover:text-gold-400"
                         title="Edit"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,7 +181,8 @@ export default function ProductsPage() {
                         </svg>
                       </Link>
                       <button
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/10 transition-colors text-[#888] hover:text-red-400"
+                        onClick={() => handleDelete(product.id)}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/10 transition-colors text-[var(--text-label)] hover:text-red-400"
                         title="Delete"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,7 +199,7 @@ export default function ProductsPage() {
 
         {filteredProducts.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-[#555] text-sm">No products found matching your criteria.</p>
+            <p className="text-[var(--text-dim)] text-sm">No products found matching your criteria.</p>
           </div>
         )}
       </div>
@@ -175,19 +208,19 @@ export default function ProductsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="admin-card p-4 text-center">
           <p className="text-2xl font-bold text-gradient-gold">{products.length}</p>
-          <p className="text-xs text-[#666] mt-1">Total Products</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Total Products</p>
         </div>
         <div className="admin-card p-4 text-center">
           <p className="text-2xl font-bold text-green-400">{products.filter(p => p.status === 'active').length}</p>
-          <p className="text-xs text-[#666] mt-1">Active</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Active</p>
         </div>
         <div className="admin-card p-4 text-center">
           <p className="text-2xl font-bold text-yellow-400">{products.filter(p => (p.stock || 0) < 15).length}</p>
-          <p className="text-xs text-[#666] mt-1">Low Stock</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Low Stock</p>
         </div>
         <div className="admin-card p-4 text-center">
           <p className="text-2xl font-bold text-gold-400">{products.filter(p => p.featured).length}</p>
-          <p className="text-xs text-[#666] mt-1">Featured</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Featured</p>
         </div>
       </div>
     </div>

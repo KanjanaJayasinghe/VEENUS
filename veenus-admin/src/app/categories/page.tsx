@@ -1,42 +1,83 @@
 'use client';
 
-import { useState } from 'react';
-import { categories, products } from '@/data';
-import { Category } from '@/types';
+import { useState, useEffect } from 'react';
+import { getCategories, getProducts, saveCategory, deleteCategory } from '@/lib/firestore';
+import { categories as staticCategories, products as staticProducts } from '@/data';
+import { Category, Product } from '@/types';
 
 export default function CategoriesPage() {
+  const [categoriesList, setCategoriesList] = useState<Category[]>([]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Category>>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: '', slug: '', description: '', image: '' });
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    Promise.all([getCategories(), getProducts()]).then(([cats, data]) => {
+      setCategoriesList(cats);
+      setProductsList(data.products);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed, using static data:', err);
+      setCategoriesList(staticCategories);
+      setProductsList(staticProducts);
+      setLoading(false);
+    });
+  }, []);
+
   const startEdit = (cat: Category) => {
     setEditingId(cat.id);
     setEditForm({ ...cat });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!editForm.id) return;
+    await saveCategory(editForm as Category);
+    setCategoriesList((prev) => prev.map((c) => c.id === editForm.id ? { ...c, ...editForm } : c));
     setEditingId(null);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const handleAddCategory = (e: React.FormEvent) => {
+  const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newCat: Category = {
+      id: 'cat-' + Date.now(),
+      name: newCategory.name,
+      slug: newCategory.slug,
+      description: newCategory.description,
+      image: newCategory.image,
+    };
+    await saveCategory(newCat);
+    setCategoriesList((prev) => [...prev, newCat]);
     setShowAddForm(false);
     setNewCategory({ name: '', slug: '', description: '', image: '' });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this category?')) return;
+    await deleteCategory(id);
+    setCategoriesList((prev) => prev.filter((c) => c.id !== id));
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
+      {loading && (
+        <div className="flex items-center justify-center h-32">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {!loading && (
+      <>{/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#e5e5e5]">Categories</h2>
-          <p className="text-sm text-[#666] mt-0.5">Manage product categories</p>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Categories</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">Manage product categories</p>
         </div>
         <button onClick={() => setShowAddForm(!showAddForm)} className="btn-gold">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,10 +96,10 @@ export default function CategoriesPage() {
       {/* Add Category Form */}
       {showAddForm && (
         <form onSubmit={handleAddCategory} className="admin-card p-6">
-          <h3 className="text-base font-semibold text-[#e5e5e5] mb-4">New Category</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">New Category</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Name *</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Name *</label>
               <input
                 type="text"
                 value={newCategory.name}
@@ -69,7 +110,7 @@ export default function CategoriesPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Slug</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Slug</label>
               <input
                 type="text"
                 value={newCategory.slug}
@@ -78,7 +119,7 @@ export default function CategoriesPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#999] mb-1.5">Description</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Description</label>
               <textarea
                 value={newCategory.description}
                 onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
@@ -88,7 +129,7 @@ export default function CategoriesPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#999] mb-1.5">Image URL</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Image URL</label>
               <input
                 type="url"
                 value={newCategory.image}
@@ -107,8 +148,8 @@ export default function CategoriesPage() {
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map((category) => {
-          const productCount = products.filter((p) => p.category.id === category.id).length;
+        {categoriesList.map((category) => {
+          const productCount = productsList.filter((p) => p.category.id === category.id).length;
           const isEditing = editingId === category.id;
 
           return (
@@ -163,14 +204,14 @@ export default function CategoriesPage() {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-lg font-semibold text-[#e5e5e5]">{category.name}</h3>
-                    <p className="text-xs text-[#555] font-mono mt-0.5">/{category.slug}</p>
-                    <p className="text-sm text-[#888] mt-2 line-clamp-2">{category.description}</p>
-                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#1a1a1a]">
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">{category.name}</h3>
+                    <p className="text-xs text-[var(--text-dim)] font-mono mt-0.5">/{category.slug}</p>
+                    <p className="text-sm text-[var(--text-label)] mt-2 line-clamp-2">{category.description}</p>
+                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[var(--border-light)]">
                       <button onClick={() => startEdit(category)} className="btn-outline text-xs px-3 py-1.5">
                         Edit
                       </button>
-                      <button className="btn-danger text-xs px-3 py-1.5">
+                      <button onClick={() => handleDelete(category.id)} className="btn-danger text-xs px-3 py-1.5">
                         Delete
                       </button>
                     </div>
@@ -181,6 +222,8 @@ export default function CategoriesPage() {
           );
         })}
       </div>
+      </>
+      )}
     </div>
   );
 }

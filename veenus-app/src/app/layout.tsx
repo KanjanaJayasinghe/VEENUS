@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Header, Footer, ThemeProvider } from "@/components";
+import { StoreProvider } from "@/lib/StoreProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -41,9 +42,11 @@ export default function RootLayout({
         style={{ backgroundColor: 'var(--bg-page)' }}
       >
         <ThemeProvider>
+          <StoreProvider>
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
+          </StoreProvider>
         </ThemeProvider>
       </body>
     </html>

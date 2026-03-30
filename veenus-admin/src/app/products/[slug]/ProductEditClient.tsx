@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCategories, getCollections, saveProduct } from '@/lib/firestore';
-import { Category, Collection } from '@/types';
+import { getProducts, saveProduct, deleteProduct } from '@/lib/firestore';
+import { Product, Category, Collection } from '@/types';
 
-export default function NewProductPage() {
+export default function ProductEditClient({ params }: { params: { slug: string } }) {
   const router = useRouter();
+  const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -30,28 +32,71 @@ export default function NewProductPage() {
     featured: false,
     new: false,
     bestseller: false,
-    status: 'draft' as 'active' | 'draft' | 'archived',
+    status: 'active' as 'active' | 'draft' | 'archived',
   });
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    Promise.all([getCategories(), getCollections()]).then(([cats, cols]) => {
-      setCategories(cats);
-      setCollections(cols);
-      setLoadingData(false);
+    getProducts().then((data) => {
+      setCategories(data.categories);
+      setCollections(data.collections);
+      const found = data.products.find((p) => p.slug === params.slug);
+      if (found) {
+        setProduct(found);
+        setFormData({
+          name: found.name,
+          slug: found.slug,
+          price: found.price.toString(),
+          originalPrice: found.originalPrice?.toString() || '',
+          shortDescription: found.shortDescription,
+          description: found.description,
+          category: found.category.id,
+          collection: found.collection?.id || '',
+          material: found.material,
+          sku: found.sku || '',
+          stock: found.stock?.toString() || '',
+          sizes: found.sizes,
+          colors: found.colors.length > 0 ? found.colors : [{ name: '', hex: '#000000' }],
+          careInstructions: found.careInstructions.length > 0 ? found.careInstructions : [''],
+          images: found.images,
+          featured: found.featured,
+          new: found.new,
+          bestseller: found.bestseller,
+          status: (found.status || 'active') as 'active' | 'draft' | 'archived',
+        });
+      }
+      setLoading(false);
     });
-  }, []);
+  }, [params.slug]);
 
   const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size', 'Adjustable'];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm text-[var(--text-muted)]">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-[var(--text-dim)] text-lg mb-4">Product not found</p>
+          <button onClick={() => router.push('/products')} className="btn-gold">
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const handleChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-      ...(field === 'name'
-        ? { slug: (value as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') }
-        : {}),
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const toggleSize = (size: string) => {
@@ -62,10 +107,7 @@ export default function NewProductPage() {
   };
 
   const addColor = () => {
-    setFormData((prev) => ({
-      ...prev,
-      colors: [...prev.colors, { name: '', hex: '#000000' }],
-    }));
+    setFormData((prev) => ({ ...prev, colors: [...prev.colors, { name: '', hex: '#000000' }] }));
   };
 
   const updateColor = (index: number, field: 'name' | 'hex', value: string) => {
@@ -76,31 +118,7 @@ export default function NewProductPage() {
   };
 
   const removeColor = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      colors: prev.colors.filter((_, i) => i !== index),
-    }));
-  };
-
-  const addCareInstruction = () => {
-    setFormData((prev) => ({
-      ...prev,
-      careInstructions: [...prev.careInstructions, ''],
-    }));
-  };
-
-  const updateCareInstruction = (index: number, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      careInstructions: prev.careInstructions.map((c, i) => (i === index ? value : c)),
-    }));
-  };
-
-  const removeCareInstruction = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      careInstructions: prev.careInstructions.filter((_, i) => i !== index),
-    }));
+    setFormData((prev) => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) }));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,10 +137,7 @@ export default function NewProductPage() {
   };
 
   const removeImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setFormData((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,9 +146,8 @@ export default function NewProductPage() {
     try {
       const category = categories.find((c) => c.id === formData.category);
       const col = collections.find((c) => c.id === formData.collection);
-      const productId = 'prod-' + Date.now();
       await saveProduct({
-        id: productId,
+        id: product!.id,
         name: formData.name,
         slug: formData.slug,
         price: parseFloat(formData.price) || 0,
@@ -141,7 +155,7 @@ export default function NewProductPage() {
         description: formData.description,
         shortDescription: formData.shortDescription,
         images: formData.images,
-        category: category || { id: '', name: '', slug: '', description: '', image: '' },
+        category: category || product!.category,
         collection: col,
         sizes: formData.sizes,
         colors: formData.colors,
@@ -155,13 +169,10 @@ export default function NewProductPage() {
         status: formData.status,
       });
       setSaved(true);
-      setTimeout(() => {
-        setSaved(false);
-        router.push('/products');
-      }, 1500);
+      setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      console.error('Error saving product:', err);
-      alert('Failed to save product. Please try again.');
+      console.error('Error updating product:', err);
+      alert('Failed to update product.');
     } finally {
       setSaving(false);
     }
@@ -172,8 +183,8 @@ export default function NewProductPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Add New Product</h2>
-          <p className="text-sm text-[var(--text-muted)] mt-0.5">Create a new product for the Veenus catalogue</p>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Edit Product</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">{product.name}</p>
         </div>
         <button onClick={() => router.push('/products')} className="btn-outline">
           ← Back to Products
@@ -182,7 +193,7 @@ export default function NewProductPage() {
 
       {saved && (
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-3 text-green-400 text-sm">
-          ✓ Product saved successfully!
+          ✓ Product updated successfully!
         </div>
       )}
 
@@ -193,110 +204,46 @@ export default function NewProductPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Product Name *</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="e.g., Silk Evening Gown"
-                className="admin-input"
-                required
-              />
+              <input type="text" value={formData.name} onChange={(e) => handleChange('name', e.target.value)} className="admin-input" required />
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Slug</label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => handleChange('slug', e.target.value)}
-                className="admin-input"
-                placeholder="auto-generated"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">SKU *</label>
-              <input
-                type="text"
-                value={formData.sku}
-                onChange={(e) => handleChange('sku', e.target.value)}
-                placeholder="e.g., VN-DRS-013"
-                className="admin-input"
-                required
-              />
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">SKU</label>
+              <input type="text" value={formData.sku} onChange={(e) => handleChange('sku', e.target.value)} className="admin-input" />
             </div>
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Material</label>
-              <input
-                type="text"
-                value={formData.material}
-                onChange={(e) => handleChange('material', e.target.value)}
-                placeholder="e.g., 100% Mulberry Silk"
-                className="admin-input"
-              />
+              <input type="text" value={formData.material} onChange={(e) => handleChange('material', e.target.value)} className="admin-input" />
+            </div>
+            <div>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Slug</label>
+              <input type="text" value={formData.slug} onChange={(e) => handleChange('slug', e.target.value)} className="admin-input" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Short Description *</label>
-              <input
-                type="text"
-                value={formData.shortDescription}
-                onChange={(e) => handleChange('shortDescription', e.target.value)}
-                placeholder="Brief product tagline"
-                className="admin-input"
-                required
-              />
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Short Description</label>
+              <input type="text" value={formData.shortDescription} onChange={(e) => handleChange('shortDescription', e.target.value)} className="admin-input" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Full Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
-                placeholder="Detailed product description..."
-                className="admin-textarea"
-                rows={4}
-              />
+              <textarea value={formData.description} onChange={(e) => handleChange('description', e.target.value)} className="admin-textarea" rows={4} />
             </div>
           </div>
         </div>
 
-        {/* Pricing & Stock */}
+        {/* Pricing */}
         <div className="admin-card p-6">
           <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">Pricing & Inventory</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Price (LKR) *</label>
-              <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => handleChange('price', e.target.value)}
-                placeholder="0.00"
-                className="admin-input"
-                min="0"
-                step="0.01"
-                required
-              />
+              <input type="number" value={formData.price} onChange={(e) => handleChange('price', e.target.value)} className="admin-input" min="0" step="0.01" required />
             </div>
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Original Price (LKR)</label>
-              <input
-                type="number"
-                value={formData.originalPrice}
-                onChange={(e) => handleChange('originalPrice', e.target.value)}
-                placeholder="Leave blank for no discount"
-                className="admin-input"
-                min="0"
-                step="0.01"
-              />
+              <input type="number" value={formData.originalPrice} onChange={(e) => handleChange('originalPrice', e.target.value)} className="admin-input" min="0" step="0.01" />
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Stock Quantity *</label>
-              <input
-                type="number"
-                value={formData.stock}
-                onChange={(e) => handleChange('stock', e.target.value)}
-                placeholder="0"
-                className="admin-input"
-                min="0"
-                required
-              />
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Stock *</label>
+              <input type="number" value={formData.stock} onChange={(e) => handleChange('stock', e.target.value)} className="admin-input" min="0" required />
             </div>
           </div>
         </div>
@@ -306,14 +253,8 @@ export default function NewProductPage() {
           <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">Organization</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Category *</label>
-              <select
-                value={formData.category}
-                onChange={(e) => handleChange('category', e.target.value)}
-                className="admin-select"
-                required
-              >
-                <option value="">Select Category</option>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Category</label>
+              <select value={formData.category} onChange={(e) => handleChange('category', e.target.value)} className="admin-select">
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -321,11 +262,7 @@ export default function NewProductPage() {
             </div>
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Collection</label>
-              <select
-                value={formData.collection}
-                onChange={(e) => handleChange('collection', e.target.value)}
-                className="admin-select"
-              >
+              <select value={formData.collection} onChange={(e) => handleChange('collection', e.target.value)} className="admin-select">
                 <option value="">No Collection</option>
                 {collections.map((col) => (
                   <option key={col.id} value={col.id}>{col.name}</option>
@@ -334,19 +271,13 @@ export default function NewProductPage() {
             </div>
             <div>
               <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-                className="admin-select"
-              >
-                <option value="draft">Draft</option>
+              <select value={formData.status} onChange={(e) => handleChange('status', e.target.value)} className="admin-select">
                 <option value="active">Active</option>
+                <option value="draft">Draft</option>
                 <option value="archived">Archived</option>
               </select>
             </div>
           </div>
-
-          {/* Flags */}
           <div className="flex flex-wrap gap-6 mt-4 pt-4 border-t border-[var(--border-light)]">
             {(['featured', 'new', 'bestseller'] as const).map((flag) => (
               <label key={flag} className="flex items-center gap-2 cursor-pointer">
@@ -387,60 +318,29 @@ export default function NewProductPage() {
         <div className="admin-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Colors</h3>
-            <button type="button" onClick={addColor} className="btn-outline text-xs px-3 py-1.5">
-              + Add Color
-            </button>
+            <button type="button" onClick={addColor} className="btn-outline text-xs px-3 py-1.5">+ Add Color</button>
           </div>
           <div className="space-y-3">
             {formData.colors.map((color, index) => (
               <div key={index} className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={color.hex}
-                  onChange={(e) => updateColor(index, 'hex', e.target.value)}
-                  className="w-10 h-10 rounded-lg border border-[var(--border)] cursor-pointer bg-transparent"
-                />
-                <input
-                  type="text"
-                  value={color.name}
-                  onChange={(e) => updateColor(index, 'name', e.target.value)}
-                  placeholder="Color name (e.g., Midnight Blue)"
-                  className="admin-input flex-1"
-                />
-                <input
-                  type="text"
-                  value={color.hex}
-                  onChange={(e) => updateColor(index, 'hex', e.target.value)}
-                  placeholder="#000000"
-                  className="admin-input w-28"
-                />
+                <input type="color" value={color.hex} onChange={(e) => updateColor(index, 'hex', e.target.value)} className="w-10 h-10 rounded-lg border border-[var(--border)] cursor-pointer bg-transparent" />
+                <input type="text" value={color.name} onChange={(e) => updateColor(index, 'name', e.target.value)} placeholder="Color name" className="admin-input flex-1" />
+                <input type="text" value={color.hex} onChange={(e) => updateColor(index, 'hex', e.target.value)} className="admin-input w-28" />
                 {formData.colors.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeColor(index)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-[var(--text-dim)] hover:text-red-400 transition-colors"
-                  >
-                    ✕
-                  </button>
+                  <button type="button" onClick={() => removeColor(index)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-[var(--text-dim)] hover:text-red-400">✕</button>
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Images */}
+        {/* Product Images */}
         <div className="admin-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">Product Images</h3>
             <label className="btn-outline text-xs px-3 py-1.5 cursor-pointer">
               + Upload Images
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
             </label>
           </div>
           {formData.images.length === 0 ? (
@@ -450,13 +350,7 @@ export default function NewProductPage() {
               </svg>
               <span className="text-sm text-[var(--text-dim)]">Click to upload images</span>
               <span className="text-xs text-[var(--text-faint)] mt-1">PNG, JPG, WEBP supported</span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
             </label>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -477,58 +371,21 @@ export default function NewProductPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                 </svg>
                 <span className="text-xs text-[var(--text-dim)] mt-1">Add more</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
+                <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
               </label>
             </div>
           )}
         </div>
 
-        {/* Care Instructions */}
-        <div className="admin-card p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[var(--text-primary)]">Care Instructions</h3>
-            <button type="button" onClick={addCareInstruction} className="btn-outline text-xs px-3 py-1.5">
-              + Add Instruction
-            </button>
-          </div>
-          <div className="space-y-3">
-            {formData.careInstructions.map((inst, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={inst}
-                  onChange={(e) => updateCareInstruction(index, e.target.value)}
-                  placeholder="e.g., Dry clean only"
-                  className="admin-input flex-1"
-                />
-                {formData.careInstructions.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeCareInstruction(index)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-[var(--text-dim)] hover:text-red-400 transition-colors"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Submit */}
         <div className="flex items-center gap-4">
-          <button type="submit" className="btn-gold px-8" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Product'}
-          </button>
-          <button type="button" onClick={() => router.push('/products')} className="btn-outline">
-            Cancel
-          </button>
+          <button type="submit" className="btn-gold px-8" disabled={saving}>{saving ? 'Saving...' : 'Update Product'}</button>
+          <button type="button" onClick={() => router.push('/products')} className="btn-outline">Cancel</button>
+          <button type="button" className="btn-danger ml-auto" onClick={async () => {
+            if (!confirm('Delete this product?')) return;
+            await deleteProduct(product!.id);
+            router.push('/products');
+          }}>Delete Product</button>
         </div>
       </form>
     </div>

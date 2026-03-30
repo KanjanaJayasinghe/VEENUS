@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { collections, products } from '@/data';
-import { Collection } from '@/types';
+import { useState, useEffect } from 'react';
+import { getCollections, getProducts, saveCollection, deleteCollection } from '@/lib/firestore';
+import { collections as staticCollections, products as staticProducts } from '@/data';
+import { Collection, Product } from '@/types';
 
 export default function CollectionsPage() {
+  const [collectionsList, setCollectionsList] = useState<Collection[]>([]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Collection>>({});
   const [showAddForm, setShowAddForm] = useState(false);
@@ -13,32 +17,71 @@ export default function CollectionsPage() {
   });
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    Promise.all([getCollections(), getProducts()]).then(([cols, data]) => {
+      setCollectionsList(cols);
+      setProductsList(data.products);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed, using static data:', err);
+      setCollectionsList(staticCollections);
+      setProductsList(staticProducts);
+      setLoading(false);
+    });
+  }, []);
+
   const startEdit = (col: Collection) => {
     setEditingId(col.id);
     setEditForm({ ...col });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!editForm.id) return;
+    await saveCollection(editForm as Collection);
+    setCollectionsList((prev) => prev.map((c) => c.id === editForm.id ? { ...c, ...editForm } : c));
     setEditingId(null);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const handleAddCollection = (e: React.FormEvent) => {
+  const handleAddCollection = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newCol: Collection = {
+      id: 'col-' + Date.now(),
+      name: newCollection.name,
+      slug: newCollection.slug,
+      description: newCollection.description,
+      image: newCollection.image,
+      season: newCollection.season || undefined,
+      year: newCollection.year ? parseInt(newCollection.year) : undefined,
+    };
+    await saveCollection(newCol);
+    setCollectionsList((prev) => [...prev, newCol]);
     setShowAddForm(false);
     setNewCollection({ name: '', slug: '', description: '', image: '', season: '', year: '' });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this collection?')) return;
+    await deleteCollection(id);
+    setCollectionsList((prev) => prev.filter((c) => c.id !== id));
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
+      {loading && (
+        <div className="flex items-center justify-center h-32">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {!loading && (<>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#e5e5e5]">Collections</h2>
-          <p className="text-sm text-[#666] mt-0.5">Manage seasonal and themed collections</p>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Collections</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">Manage seasonal and themed collections</p>
         </div>
         <button onClick={() => setShowAddForm(!showAddForm)} className="btn-gold">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,10 +100,10 @@ export default function CollectionsPage() {
       {/* Add Form */}
       {showAddForm && (
         <form onSubmit={handleAddCollection} className="admin-card p-6">
-          <h3 className="text-base font-semibold text-[#e5e5e5] mb-4">New Collection</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">New Collection</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Name *</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Name *</label>
               <input
                 type="text"
                 value={newCollection.name}
@@ -71,11 +114,11 @@ export default function CollectionsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Slug</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Slug</label>
               <input type="text" value={newCollection.slug} onChange={(e) => setNewCollection({ ...newCollection, slug: e.target.value })} className="admin-input" />
             </div>
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Season</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Season</label>
               <select
                 value={newCollection.season}
                 onChange={(e) => setNewCollection({ ...newCollection, season: e.target.value })}
@@ -89,7 +132,7 @@ export default function CollectionsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-[#999] mb-1.5">Year</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Year</label>
               <input
                 type="number"
                 value={newCollection.year}
@@ -99,7 +142,7 @@ export default function CollectionsPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#999] mb-1.5">Description</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Description</label>
               <textarea
                 value={newCollection.description}
                 onChange={(e) => setNewCollection({ ...newCollection, description: e.target.value })}
@@ -108,7 +151,7 @@ export default function CollectionsPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#999] mb-1.5">Image URL</label>
+              <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Image URL</label>
               <input type="url" value={newCollection.image} onChange={(e) => setNewCollection({ ...newCollection, image: e.target.value })} placeholder="https://..." className="admin-input" />
             </div>
           </div>
@@ -121,17 +164,17 @@ export default function CollectionsPage() {
 
       {/* Collections Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {collections.map((collection) => {
-          const productCount = products.filter((p) => p.collection?.id === collection.id).length;
+        {collectionsList.map((collection) => {
+          const productCount = productsList.filter((p) => p.collection?.id === collection.id).length;
           const isEditing = editingId === collection.id;
 
           return (
             <div key={collection.id} className="admin-card overflow-hidden">
-              <div className="flex">
+              <div className="flex flex-col sm:flex-row">
                 {/* Image */}
-                <div className="relative w-48 flex-shrink-0">
+                <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
                   <img src={collection.image} alt={collection.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#161616]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--bg-card)]" />
                 </div>
 
                 {/* Content */}
@@ -161,14 +204,14 @@ export default function CollectionsPage() {
                           <span className="badge badge-gold">{collection.season} {collection.year}</span>
                         )}
                       </div>
-                      <h3 className="text-lg font-semibold text-[#e5e5e5]">{collection.name}</h3>
-                      <p className="text-xs text-[#555] font-mono">/{collection.slug}</p>
-                      <p className="text-sm text-[#888] mt-2 line-clamp-2">{collection.description}</p>
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#1a1a1a]">
-                        <span className="text-xs text-[#555]">{productCount} products</span>
+                      <h3 className="text-lg font-semibold text-[var(--text-primary)]">{collection.name}</h3>
+                      <p className="text-xs text-[var(--text-dim)] font-mono">/{collection.slug}</p>
+                      <p className="text-sm text-[var(--text-label)] mt-2 line-clamp-2">{collection.description}</p>
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border-light)]">
+                        <span className="text-xs text-[var(--text-dim)]">{productCount} products</span>
                         <div className="flex gap-2">
                           <button onClick={() => startEdit(collection)} className="btn-outline text-xs px-3 py-1.5">Edit</button>
-                          <button className="btn-danger text-xs px-3 py-1.5">Delete</button>
+                          <button onClick={() => handleDelete(collection.id)} className="btn-danger text-xs px-3 py-1.5">Delete</button>
                         </div>
                       </div>
                     </>
@@ -179,6 +222,7 @@ export default function CollectionsPage() {
           );
         })}
       </div>
+      </>)}
     </div>
   );
 }
