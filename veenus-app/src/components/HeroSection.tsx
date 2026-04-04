@@ -6,28 +6,28 @@ import Link from 'next/link';
 
 const heroSlides = [
   {
-    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1920&q=80',
+    image: '/_DSC8285.JPEG',
     title: 'Noir Elegance',
-    subtitle: 'Fall/Winter 2026',
+    subtitle: 'New Collection',
     description: 'Discover the art of timeless sophistication in every thread',
     cta: 'Explore Collection',
-    href: '/collections/noir-elegance',
+    href: '/collections',
   },
   {
-    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1920&q=80',
+    image: '/_DSC8371.JPEG',
     title: 'Golden Hour',
-    subtitle: 'Spring/Summer 2026',
+    subtitle: 'Latest Arrivals',
     description: 'Embrace the warmth of luxury woven in gold',
     cta: 'Shop Now',
-    href: '/collections/golden-hour',
+    href: '/categories',
   },
   {
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1920&q=80',
+    image: '/DSC_4143.JPEG',
     title: 'Midnight Royale',
     subtitle: 'Exclusive Collection',
     description: 'For those who command attention & radiate power',
     cta: 'View Collection',
-    href: '/collections/midnight-royale',
+    href: '/collections',
   },
 ];
 
@@ -72,7 +72,7 @@ export default function HeroSection() {
             alt={slide.title}
             fill
             className="object-cover"
-            priority={index === 0}
+            priority
             sizes="100vw"
           />
         </div>

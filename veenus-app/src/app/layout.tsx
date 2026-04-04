@@ -36,6 +36,9 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preload" href="/background-optimized.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/_DSC8285.JPEG" as="image" type="image/jpeg" />
+        <link rel="preload" href="/_DSC8371.JPEG" as="image" type="image/jpeg" />
+        <link rel="preload" href="/DSC_4143.JPEG" as="image" type="image/jpeg" />
       </head>
       <body
         className={`${playfair.variable} ${inter.variable} font-body text-luxury-light antialiased`}
