@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { getCollections, getProducts, saveCollection, deleteCollection } from '@/lib/firestore';
-import { collections as staticCollections, products as staticProducts } from '@/data';
 import { Collection, Product } from '@/types';
 
 export default function CollectionsPage() {
@@ -23,9 +22,7 @@ export default function CollectionsPage() {
       setProductsList(data.products);
       setLoading(false);
     }).catch((err) => {
-      console.error('Firestore load failed, using static data:', err);
-      setCollectionsList(staticCollections);
-      setProductsList(staticProducts);
+      console.error('Firestore load failed:', err);
       setLoading(false);
     });
   }, []);

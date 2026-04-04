@@ -1,18 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  dashboardStats,
-  revenueData,
-  weeklyRevenueData,
-  monthlyRevenueData,
-  topProducts,
-  categorySales,
-  recentActivity,
-} from '@/data';
+import { useState, useEffect, useMemo } from 'react';
 import { getOrders, getProducts, getCustomers } from '@/lib/firestore';
-import { orders as staticOrders, products as staticProducts, customers as staticCustomers } from '@/data';
-import { Order, Product, Customer } from '@/types';
+import { Order, Product, Customer, RevenueData } from '@/types';
 import RevenueChart from '@/components/RevenueChart';
 import Link from 'next/link';
 
@@ -32,19 +22,95 @@ export default function DashboardPage() {
       setCustomers(custs);
       setLoading(false);
     }).catch((err) => {
-      console.error('Firestore load failed, using static data:', err);
-      setOrders(staticOrders);
-      setProducts(staticProducts);
-      setCustomers(staticCustomers);
+      console.error('Firestore load failed:', err);
       setLoading(false);
     });
   }, []);
 
-  const chartData = {
-    daily: revenueData,
-    weekly: weeklyRevenueData,
-    monthly: monthlyRevenueData,
-  };
+  // ── Compute revenue chart data from orders ──
+  const chartData = useMemo(() => {
+    const dailyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const date = o.createdAt;
+      if (!dailyMap[date]) dailyMap[date] = { revenue: 0, orders: 0 };
+      dailyMap[date].revenue += o.total;
+      dailyMap[date].orders += 1;
+    });
+    const daily: RevenueData[] = Object.entries(dailyMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-30)
+      .map(([date, data]) => ({ date, ...data }));
+
+    // Group by week
+    const weeklyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const d = new Date(o.createdAt);
+      const week = `Week ${Math.ceil(d.getDate() / 7)} ${d.toLocaleString('default', { month: 'short' })}`;
+      if (!weeklyMap[week]) weeklyMap[week] = { revenue: 0, orders: 0 };
+      weeklyMap[week].revenue += o.total;
+      weeklyMap[week].orders += 1;
+    });
+    const weekly: RevenueData[] = Object.entries(weeklyMap).map(([date, data]) => ({ date, ...data }));
+
+    // Group by month
+    const monthlyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const d = new Date(o.createdAt);
+      const month = d.toLocaleString('default', { month: 'short', year: 'numeric' });
+      if (!monthlyMap[month]) monthlyMap[month] = { revenue: 0, orders: 0 };
+      monthlyMap[month].revenue += o.total;
+      monthlyMap[month].orders += 1;
+    });
+    const monthly: RevenueData[] = Object.entries(monthlyMap).map(([date, data]) => ({ date, ...data }));
+
+    return { daily, weekly, monthly };
+  }, [orders]);
+
+  // ── Compute top products from orders ──
+  const computedTopProducts = useMemo(() => {
+    const productMap: Record<string, { product: Product; totalSold: number; revenue: number }> = {};
+    orders.forEach((o) => {
+      o.items.forEach((item) => {
+        const pid = item.product.id;
+        if (!productMap[pid]) {
+          productMap[pid] = { product: item.product, totalSold: 0, revenue: 0 };
+        }
+        productMap[pid].totalSold += item.quantity;
+        productMap[pid].revenue += item.price * item.quantity;
+      });
+    });
+    return Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+  }, [orders]);
+
+  // ── Compute category sales from orders ──
+  const computedCategorySales = useMemo(() => {
+    const catMap: Record<string, { name: string; revenue: number; count: number }> = {};
+    orders.forEach((o) => {
+      o.items.forEach((item) => {
+        const catName = item.product.category?.name || 'Unknown';
+        if (!catMap[catName]) catMap[catName] = { name: catName, revenue: 0, count: 0 };
+        catMap[catName].revenue += item.price * item.quantity;
+        catMap[catName].count += item.quantity;
+      });
+    });
+    const totalCount = Object.values(catMap).reduce((sum, c) => sum + c.count, 0);
+    return Object.values(catMap)
+      .map((c) => ({ name: c.name, value: totalCount > 0 ? Math.round((c.count / totalCount) * 100) : 0, revenue: c.revenue }))
+      .sort((a, b) => b.revenue - a.revenue);
+  }, [orders]);
+
+  // ── Compute recent activity from orders ──
+  const computedRecentActivity = useMemo(() => {
+    return orders
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 8)
+      .map((o) => ({
+        id: o.id,
+        type: 'order' as const,
+        message: `Order ${o.orderNumber} — ${o.status} (${o.customer.name})`,
+        time: o.updatedAt,
+      }));
+  }, [orders]);
 
   const recentOrders = orders.slice(0, 5);
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
@@ -53,25 +119,21 @@ export default function DashboardPage() {
     {
       label: 'Total Revenue',
       value: `LKR ${totalRevenue.toLocaleString()}`,
-      change: dashboardStats.revenueChange,
       icon: '💰',
     },
     {
       label: 'Total Orders',
       value: orders.length.toString(),
-      change: dashboardStats.ordersChange,
       icon: '📦',
     },
     {
       label: 'Total Products',
       value: products.length.toString(),
-      change: dashboardStats.productsChange,
       icon: '👗',
     },
     {
       label: 'Total Customers',
       value: customers.length.toString(),
-      change: dashboardStats.customersChange,
       icon: '👥',
     },
   ];
@@ -103,15 +165,6 @@ export default function DashboardPage() {
           <div key={stat.label} className="admin-card p-5">
             <div className="flex items-center justify-between mb-3">
               <span className="text-2xl">{stat.icon}</span>
-              <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                  stat.change > 0
-                    ? 'bg-green-500/10 text-green-400'
-                    : 'bg-red-500/10 text-red-400'
-                }`}
-              >
-                {stat.change > 0 ? '+' : ''}{stat.change}%
-              </span>
             </div>
             <p className="text-2xl font-semibold text-[var(--text-primary)]">{stat.value}</p>
             <p className="text-sm text-[var(--text-muted)] mt-1">{stat.label}</p>
@@ -196,7 +249,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {topProducts.map((item) => (
+              {computedTopProducts.map((item) => (
                 <tr key={item.product.id}>
                   <td>
                     <div className="flex items-center gap-3">
@@ -263,7 +316,7 @@ export default function DashboardPage() {
         <div className="admin-card p-6">
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Recent Activity</h2>
           <div className="space-y-3">
-            {recentActivity.map((activity) => {
+            {computedRecentActivity.map((activity) => {
               const icons: Record<string, string> = {
                 order: '📦',
                 product: '👗',
@@ -287,7 +340,7 @@ export default function DashboardPage() {
       <div className="admin-card p-6">
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Sales by Category</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categorySales.map((cat) => (
+          {computedCategorySales.map((cat) => (
             <div key={cat.name} className="text-center p-4 rounded-lg bg-[var(--bg-input)] border border-[var(--border-light)]">
               <div className="text-2xl font-bold text-gradient-gold">{cat.value}%</div>
               <p className="text-sm text-[var(--text-secondary)] mt-1">{cat.name}</p>

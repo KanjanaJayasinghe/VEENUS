@@ -1,16 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  orders,
-  products,
-  customers,
-  revenueData,
-  weeklyRevenueData,
-  monthlyRevenueData,
-  categorySales,
-  topProducts,
-} from '@/data';
+import { useState, useEffect, useMemo } from 'react';
+import { getOrders, getProducts, getCustomers } from '@/lib/firestore';
+import { Order, Product, Customer, RevenueData } from '@/types';
 import RevenueChart from '@/components/RevenueChart';
 
 type ReportPeriod = 'daily' | 'weekly' | 'monthly';
@@ -20,12 +12,92 @@ export default function ReportsPage() {
   const [period, setPeriod] = useState<ReportPeriod>('daily');
   const [activeReport, setActiveReport] = useState<ReportType>('sales');
   const [exportStatus, setExportStatus] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const chartData = {
-    daily: revenueData,
-    weekly: weeklyRevenueData,
-    monthly: monthlyRevenueData,
-  };
+  useEffect(() => {
+    Promise.all([getOrders(), getProducts(), getCustomers()]).then(([ords, prods, custs]) => {
+      setOrders(ords);
+      setProducts(prods.products);
+      setCustomers(custs);
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Firestore load failed:', err);
+      setLoading(false);
+    });
+  }, []);
+
+  // ── Compute revenue chart data from orders ──
+  const chartData = useMemo(() => {
+    const dailyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const date = o.createdAt;
+      if (!dailyMap[date]) dailyMap[date] = { revenue: 0, orders: 0 };
+      dailyMap[date].revenue += o.total;
+      dailyMap[date].orders += 1;
+    });
+    const daily: RevenueData[] = Object.entries(dailyMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-30)
+      .map(([date, data]) => ({ date, ...data }));
+
+    const weeklyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const d = new Date(o.createdAt);
+      const week = `Week ${Math.ceil(d.getDate() / 7)} ${d.toLocaleString('default', { month: 'short' })}`;
+      if (!weeklyMap[week]) weeklyMap[week] = { revenue: 0, orders: 0 };
+      weeklyMap[week].revenue += o.total;
+      weeklyMap[week].orders += 1;
+    });
+    const weekly: RevenueData[] = Object.entries(weeklyMap).map(([date, data]) => ({ date, ...data }));
+
+    const monthlyMap: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const d = new Date(o.createdAt);
+      const month = d.toLocaleString('default', { month: 'short', year: 'numeric' });
+      if (!monthlyMap[month]) monthlyMap[month] = { revenue: 0, orders: 0 };
+      monthlyMap[month].revenue += o.total;
+      monthlyMap[month].orders += 1;
+    });
+    const monthly: RevenueData[] = Object.entries(monthlyMap).map(([date, data]) => ({ date, ...data }));
+
+    return { daily, weekly, monthly };
+  }, [orders]);
+
+  // ── Compute top products from orders ──
+  const topProducts = useMemo(() => {
+    const productMap: Record<string, { product: Product; totalSold: number; revenue: number }> = {};
+    orders.forEach((o) => {
+      o.items.forEach((item) => {
+        const pid = item.product.id;
+        if (!productMap[pid]) {
+          productMap[pid] = { product: item.product, totalSold: 0, revenue: 0 };
+        }
+        productMap[pid].totalSold += item.quantity;
+        productMap[pid].revenue += item.price * item.quantity;
+      });
+    });
+    return Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+  }, [orders]);
+
+  // ── Compute category sales from orders ──
+  const categorySales = useMemo(() => {
+    const catMap: Record<string, { name: string; revenue: number; count: number }> = {};
+    orders.forEach((o) => {
+      o.items.forEach((item) => {
+        const catName = item.product.category?.name || 'Unknown';
+        if (!catMap[catName]) catMap[catName] = { name: catName, revenue: 0, count: 0 };
+        catMap[catName].revenue += item.price * item.quantity;
+        catMap[catName].count += item.quantity;
+      });
+    });
+    const totalCount = Object.values(catMap).reduce((sum, c) => sum + c.count, 0);
+    return Object.values(catMap)
+      .map((c) => ({ name: c.name, value: totalCount > 0 ? Math.round((c.count / totalCount) * 100) : 0, revenue: c.revenue }))
+      .sort((a, b) => b.revenue - a.revenue);
+  }, [orders]);
 
   const handleExport = (format: 'csv' | 'pdf') => {
     setExportStatus(`Generating ${format.toUpperCase()} report...`);
@@ -72,6 +144,17 @@ export default function ReportsPage() {
     ordersByDay[o.createdAt] = (ordersByDay[o.createdAt] || 0) + 1;
   });
   const busiestDay = Object.entries(ordersByDay).sort((a, b) => b[1] - a[1])[0];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm text-[var(--text-muted)]">Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -153,7 +236,7 @@ export default function ReportsPage() {
             <div className="admin-card p-5">
               <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Avg Revenue/Day</p>
               <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-                LKR {Math.round(revenueData.reduce((s, d) => s + d.revenue, 0) / revenueData.length).toLocaleString()}
+                LKR {chartData.daily.length > 0 ? Math.round(chartData.daily.reduce((s, d) => s + d.revenue, 0) / chartData.daily.length).toLocaleString() : '0'}
               </p>
               <p className="text-xs text-green-400 mt-1">+3.8% vs last period</p>
             </div>

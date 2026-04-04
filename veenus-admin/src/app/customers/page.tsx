@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { getCustomers, getOrders } from '@/lib/firestore';
-import { customers as staticCustomers, orders as staticOrders } from '@/data';
 import { Customer, Order } from '@/types';
 
 export default function CustomersPage() {
@@ -18,9 +17,7 @@ export default function CustomersPage() {
       setOrders(orderData);
       setLoading(false);
     }).catch((err) => {
-      console.error('Firestore load failed, using static data:', err);
-      setCustomers(staticCustomers);
-      setOrders(staticOrders);
+      console.error('Firestore load failed:', err);
       setLoading(false);
     });
   }, []);

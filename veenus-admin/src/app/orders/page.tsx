@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getOrders } from '@/lib/firestore';
-import { orders as staticOrders } from '@/data';
 import { OrderStatus, Order } from '@/types';
 
 export default function OrdersPage() {
@@ -18,8 +17,7 @@ export default function OrdersPage() {
       setOrders(data);
       setLoading(false);
     }).catch((err) => {
-      console.error('Firestore load failed, using static data:', err);
-      setOrders(staticOrders);
+      console.error('Firestore load failed:', err);
       setLoading(false);
     });
   }, []);

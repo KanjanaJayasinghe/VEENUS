@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getProducts, deleteProduct } from '@/lib/firestore';
-import { products as staticProducts } from '@/data';
 import { Product } from '@/types';
 
 export default function ProductsPage() {
@@ -18,8 +17,7 @@ export default function ProductsPage() {
       setProducts(data.products);
       setLoading(false);
     }).catch((err) => {
-      console.error('Firestore load failed, using static data:', err);
-      setProducts(staticProducts);
+      console.error('Firestore load failed:', err);
       setLoading(false);
     });
   }, []);
