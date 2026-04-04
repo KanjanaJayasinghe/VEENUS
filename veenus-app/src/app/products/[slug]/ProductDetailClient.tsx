@@ -53,8 +53,70 @@ export default function ProductDetailClient({ slug: slugProp }: { slug?: string 
     .filter((p) => p.category.id === product.category.id && p.id !== product.id)
     .slice(0, 4);
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.shortDescription || product.description,
+    image: product.images,
+    brand: {
+      '@type': 'Brand',
+      name: 'Veenus Kleding',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://veenuskleding.com/products/${product.slug}`,
+      priceCurrency: 'LKR',
+      price: product.price,
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Veenus Kleding',
+      },
+    },
+    category: product.category.name,
+    material: product.material,
+    color: product.colors.map((c) => c.name),
+    size: product.sizes,
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://veenuskleding.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: product.category.name,
+        item: `https://veenuskleding.com/categories/${product.category.slug}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product.name,
+        item: `https://veenuskleding.com/products/${product.slug}`,
+      },
+    ],
+  };
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Breadcrumb */}
       <section className="pt-24 sm:pt-28 md:pt-32 pb-4 relative">
         <div className="container-luxury">

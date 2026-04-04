@@ -37,8 +37,38 @@ export default function CollectionPageClient({ slug: slugProp }: { slug?: string
     );
   }
 
+  const collectionJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: collection.name,
+    description: collection.description,
+    url: `https://veenuskleding.com/collections/${collection.slug}`,
+    image: collection.image,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Veenus Kleding',
+      url: 'https://veenuskleding.com',
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: collectionProducts.length,
+      itemListElement: collectionProducts.slice(0, 10).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: p.name,
+        url: `https://veenuskleding.com/products/${p.slug}`,
+      })),
+    },
+  };
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
+
       {/* Hero Section */}
       <section className="relative h-[50vh] sm:h-[60vh] md:h-[65vh] min-h-[350px] sm:min-h-[450px] md:min-h-[550px] flex items-end overflow-hidden">
         {/* Background Image */}

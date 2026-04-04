@@ -4,8 +4,35 @@ import Link from 'next/link';
 import { SectionHeader } from '@/components';
 
 export const metadata: Metadata = {
-  title: 'About Us | Veenus Kleding',
-  description: 'Discover the story behind Veenus Kleding. Learn about our commitment to luxury, craftsmanship, and timeless elegance.',
+  title: 'About Us – Our Story, Values & Heritage',
+  description:
+    'Discover the story behind Veenus Kleding. Since 2018, we have been redefining luxury fashion with a commitment to excellence, craftsmanship, sustainability, and timeless elegance. Learn about our journey.',
+  keywords: [
+    'about Veenus Kleding',
+    'luxury fashion brand story',
+    'fashion brand history',
+    'sustainable luxury fashion',
+    'fashion craftsmanship',
+    'premium clothing brand',
+    'Veenus Kleding heritage',
+  ],
+  alternates: {
+    canonical: 'https://veenuskleding.com/about',
+  },
+  openGraph: {
+    title: 'About Veenus Kleding – Our Story & Heritage',
+    description:
+      'Since 2018, Veenus Kleding has been redefining luxury fashion with excellence, craftsmanship, and timeless elegance.',
+    url: 'https://veenuskleding.com/about',
+    type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'About Veenus Kleding' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Veenus Kleding – Our Story & Heritage',
+    description: 'Discover the story behind Veenus Kleding luxury fashion brand.',
+    images: ['/og-image.png'],
+  },
 };
 
 const values = [

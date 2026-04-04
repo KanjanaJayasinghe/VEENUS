@@ -37,8 +37,38 @@ export default function CategoryPageClient({ slug: slugProp }: { slug?: string }
     );
   }
 
+  const categoryJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.name,
+    description: category.description,
+    url: `https://veenuskleding.com/categories/${category.slug}`,
+    image: category.image,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Veenus Kleding',
+      url: 'https://veenuskleding.com',
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: categoryProducts.length,
+      itemListElement: categoryProducts.slice(0, 10).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: p.name,
+        url: `https://veenuskleding.com/products/${p.slug}`,
+      })),
+    },
+  };
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJsonLd) }}
+      />
+
       {/* Hero Section */}
       <section className="relative h-[45vh] sm:h-[50vh] md:h-[55vh] min-h-[300px] sm:min-h-[350px] md:min-h-[450px] flex items-end overflow-hidden">
         {/* Background Image */}

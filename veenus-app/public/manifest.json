@@ -1,0 +1,19 @@
+{
+  "name": "Veenus Kleding – Luxury Fashion & Designer Clothing",
+  "short_name": "Veenus Kleding",
+  "description": "Premium luxury fashion brand offering designer clothing, elegant dresses, exclusive collections, and timeless pieces.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#B8860B",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "fashion", "lifestyle"]
+}
