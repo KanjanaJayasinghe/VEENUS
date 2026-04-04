@@ -7,9 +7,9 @@ import { ProductCard, SectionHeader } from '@/components';
 import { useStore } from '@/lib/StoreProvider';
 import { getCollectionBySlug, getProductsByCollection } from '@/lib/firestore';
 
-export default function CollectionPageClient() {
+export default function CollectionPageClient({ slug: slugProp }: { slug?: string } = {}) {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = slugProp || (params.slug as string);
   const { products, collections, loading } = useStore();
 
   if (loading) {

@@ -7,9 +7,9 @@ import { ProductCard, SectionHeader } from '@/components';
 import { useStore } from '@/lib/StoreProvider';
 import { getCategoryBySlug, getProductsByCategory } from '@/lib/firestore';
 
-export default function CategoryPageClient() {
+export default function CategoryPageClient({ slug: slugProp }: { slug?: string } = {}) {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = slugProp || (params.slug as string);
   const { products, categories, loading } = useStore();
 
   if (loading) {
@@ -154,7 +154,7 @@ export default function CategoryPageClient() {
               .map((cat) => (
                 <Link
                   key={cat.id}
-                  href={`/categories/${cat.slug}`}
+                  href={`/categories/view?slug=${cat.slug}`}
                   className="group relative overflow-hidden aspect-square"
                 >
                   <Image

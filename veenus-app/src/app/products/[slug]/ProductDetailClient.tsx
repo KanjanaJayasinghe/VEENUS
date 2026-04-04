@@ -8,9 +8,9 @@ import { ProductCard } from '@/components';
 import { useStore } from '@/lib/StoreProvider';
 import { getProductBySlug } from '@/lib/firestore';
 
-export default function ProductDetailClient() {
+export default function ProductDetailClient({ slug: slugProp }: { slug?: string } = {}) {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = slugProp || (params.slug as string);
   const { products, loading } = useStore();
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -74,7 +74,7 @@ export default function ProductDetailClient() {
               <li className="text-gold-800/30">/</li>
               <li>
                 <Link
-                  href={`/categories/${product.category.slug}`}
+                  href={`/categories/view?slug=${product.category.slug}`}
                   className="text-luxury-cream/30 hover:text-gold-400 transition-colors duration-300"
                 >
                   {product.category.name}
@@ -158,7 +158,7 @@ export default function ProductDetailClient() {
               {/* Category & Collection */}
               <div className="flex items-center gap-3 mb-5">
                 <Link
-                  href={`/categories/${product.category.slug}`}
+                  href={`/categories/view?slug=${product.category.slug}`}
                   className="text-gold-400 text-[10px] uppercase tracking-[0.4em] hover:text-gold-300 transition-colors duration-300"
                 >
                   {product.category.name}
@@ -167,7 +167,7 @@ export default function ProductDetailClient() {
                   <>
                     <span className="text-gold-800/40">•</span>
                     <Link
-                      href={`/collections/${product.collection.slug}`}
+                      href={`/collections/view?slug=${product.collection.slug}`}
                       className="text-luxury-cream/30 text-[10px] uppercase tracking-[0.4em] hover:text-gold-400 transition-colors duration-300"
                     >
                       {product.collection.name}

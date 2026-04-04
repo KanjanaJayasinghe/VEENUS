@@ -61,7 +61,7 @@ export default function CategoriesPage() {
             {categories.map((category) => (
               <Link
                 key={category.id}
-                href={`/categories/${category.slug}`}
+                href={`/categories/view?slug=${category.slug}`}
                 className="group relative overflow-hidden aspect-[4/3] rounded-2xl"
               >
                 <Image
@@ -105,7 +105,7 @@ export default function CategoriesPage() {
             title="All Products"
             description="Browse our entire catalog of luxury fashion"
           />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
             {products.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}

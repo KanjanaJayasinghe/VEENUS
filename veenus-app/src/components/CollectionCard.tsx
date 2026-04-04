@@ -13,7 +13,7 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
 
   return (
     <Link
-      href={`/collections/${collection.slug}`}
+      href={`/collections/view?slug=${collection.slug}`}
       className="group block relative overflow-hidden rounded-2xl"
       style={{ animationDelay: `${index * 100}ms` }}
     >

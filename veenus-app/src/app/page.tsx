@@ -67,7 +67,7 @@ export default function Home() {
             title="Featured Products"
             description="Our most coveted pieces, selected for their exceptional quality and timeless design"
           />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
             {featuredProducts.slice(0, 4).map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}
@@ -205,7 +205,7 @@ export default function Home() {
             title="New Arrivals"
             description="Be the first to experience our latest creations, fresh from our ateliers"
           />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
             {newArrivals.slice(0, 4).map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}

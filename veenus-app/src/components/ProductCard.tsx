@@ -18,7 +18,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/products/view?slug=${product.slug}`}
       className="group block"
       style={{ animationDelay: `${index * 100}ms` }}
     >

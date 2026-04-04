@@ -10,7 +10,7 @@ interface CategoryCardProps {
 export default function CategoryCard({ category, index = 0 }: CategoryCardProps) {
   return (
     <Link
-      href={`/categories/${category.slug}`}
+      href={`/categories/view?slug=${category.slug}`}
       className="group block relative overflow-hidden rounded-2xl"
       style={{ animationDelay: `${index * 100}ms` }}
     >
