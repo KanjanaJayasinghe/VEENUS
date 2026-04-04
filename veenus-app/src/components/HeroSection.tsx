@@ -107,11 +107,11 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* Decorative Corner Frames */}
-      <div className="absolute top-28 left-8 w-24 h-24 border-t border-l border-gold-600/20 hidden lg:block" />
-      <div className="absolute top-28 right-8 w-24 h-24 border-t border-r border-gold-600/20 hidden lg:block" />
-      <div className="absolute bottom-20 left-8 w-24 h-24 border-b border-l border-gold-600/20 hidden lg:block" />
-      <div className="absolute bottom-20 right-8 w-24 h-24 border-b border-r border-gold-600/20 hidden lg:block" />
+      {/* Decorative Corner Frames — clean rounded */}
+      <div className="absolute top-28 left-8 w-16 h-16 border-t border-l border-gold-600/15 rounded-tl-3xl hidden lg:block" />
+      <div className="absolute top-28 right-8 w-16 h-16 border-t border-r border-gold-600/15 rounded-tr-3xl hidden lg:block" />
+      <div className="absolute bottom-20 left-8 w-16 h-16 border-b border-l border-gold-600/15 rounded-bl-3xl hidden lg:block" />
+      <div className="absolute bottom-20 right-8 w-16 h-16 border-b border-r border-gold-600/15 rounded-br-3xl hidden lg:block" />
 
       {/* Content */}
       <div className="relative h-full container-luxury flex items-center">
@@ -120,9 +120,9 @@ export default function HeroSection() {
           <div
             className={`overflow-hidden mb-8 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}
           >
-            <div className="flex items-center gap-4 animate-fade-in-up">
-              <div className="w-12 h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, transparent)' }} />
-              <span className="text-gold-400 text-xs">✦</span>
+            <div className="flex items-center gap-3 animate-fade-in-up">
+              <div className="w-12 h-[2px] rounded-full" style={{ background: 'linear-gradient(90deg, #D4AF37, transparent)' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
             </div>
           </div>
 
@@ -149,9 +149,9 @@ export default function HeroSection() {
           {/* Decorative divider */}
           <div className={`mb-8 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500 delay-150`}>
             <div className="flex items-center gap-3">
-              <div className="w-20 h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, #D4AF37)' }} />
-              <span className="text-gold-500 text-[10px]">◆</span>
-              <div className="w-8 h-[1px] bg-gold-700/50" />
+              <div className="w-20 h-[2px] rounded-full" style={{ background: 'linear-gradient(90deg, #B8860B, #D4AF37)' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
+              <div className="w-8 h-[1px] rounded-full bg-gold-700/40" />
             </div>
           </div>
 
@@ -218,9 +218,9 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Decorative rotating diamond */}
-      <div className="absolute top-1/3 right-16 w-40 h-40 border border-gold-700/10 rotate-45 hidden xl:block animate-spin-slow" />
-      <div className="absolute top-1/3 right-20 w-24 h-24 border border-gold-600/10 rotate-45 hidden xl:block" style={{ animation: 'spin 25s linear infinite reverse' }} />
+      {/* Decorative floating orbs */}
+      <div className="absolute top-1/3 right-20 w-32 h-32 rounded-full hidden xl:block opacity-[0.06]" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.8), transparent 70%)' }} />
+      <div className="absolute top-1/2 right-32 w-16 h-16 rounded-full hidden xl:block opacity-[0.04]" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.8), transparent 70%)' }} />
       
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: `linear-gradient(to top, var(--bg-page), transparent)` }} />

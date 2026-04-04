@@ -19,11 +19,8 @@ export default function SectionHeader({
         align === 'center' ? 'text-center' : 'text-left'
       }`}
     >
-      {/* Top ornamental line */}
-      <div className={`ornament-line mb-4 md:mb-8 ${align === 'left' ? 'justify-start' : ''}`} />
-
       {subtitle && (
-        <p className="text-gold-400 text-[11px] uppercase tracking-[0.5em] mb-6 font-medium" style={{ textShadow: '0 0 15px rgba(184,134,11,0.3)' }}>
+        <p className="text-gold-400 text-[11px] uppercase tracking-[0.4em] mb-5 font-medium">
           {subtitle}
         </p>
       )}
@@ -31,7 +28,6 @@ export default function SectionHeader({
         className={`heading-section ${
           light ? 'text-luxury-cream' : 'text-gradient-gold'
         }`}
-        style={{ textShadow: light ? 'none' : '0 2px 20px rgba(184,134,11,0.15)' }}
       >
         {title}
       </h2>
@@ -45,7 +41,7 @@ export default function SectionHeader({
         </p>
       )}
       <div
-        className={`divider-gold mt-8 ${align === 'left' ? 'mx-0' : ''}`}
+        className={`divider-gold mt-6 ${align === 'left' ? 'mx-0' : ''}`}
       />
     </div>
   );

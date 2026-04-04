@@ -62,7 +62,7 @@ export default function CategoriesPage() {
               <Link
                 key={category.id}
                 href={`/categories/${category.slug}`}
-                className="group relative overflow-hidden aspect-[4/3] rounded-sm"
+                className="group relative overflow-hidden aspect-[4/3] rounded-2xl"
               >
                 <Image
                   src={category.image}
@@ -71,9 +71,9 @@ export default function CategoriesPage() {
                   className="object-cover transition-all duration-[800ms] group-hover:scale-110"
                   sizes="(max-width: 768px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/40 to-transparent" />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), 0.95), rgba(var(--image-overlay), 0.4), transparent)` }} />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" style={{ background: 'radial-gradient(ellipse at center bottom, rgba(184,134,11,0.12), transparent 70%)' }} />
-                <div className="absolute inset-3 border border-gold-800/0 group-hover:border-gold-500/30 transition-all duration-700" />
+                <div className="absolute inset-3 border border-gold-800/0 group-hover:border-gold-500/30 transition-all duration-700 rounded-xl" />
                 
                 <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-5">
                   <h3 className="font-display text-lg md:text-xl text-luxury-cream group-hover:text-gold-300 transition-all duration-500 mb-1.5">

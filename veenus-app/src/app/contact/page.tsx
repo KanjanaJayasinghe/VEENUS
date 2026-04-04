@@ -82,36 +82,24 @@ export default function ContactPage() {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(180,130,20,0.08) 0%, transparent 70%)' }} />
 
         {/* Decorative corner frames */}
-        <div className="absolute top-6 left-4 sm:top-8 sm:left-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block">
-          <div className="absolute top-0 left-0 w-full h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, transparent)' }} />
-          <div className="absolute top-0 left-0 h-full w-[1px]" style={{ background: 'linear-gradient(180deg, #B8860B, transparent)' }} />
-        </div>
-        <div className="absolute top-6 right-4 sm:top-8 sm:right-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block">
-          <div className="absolute top-0 right-0 w-full h-[1px]" style={{ background: 'linear-gradient(270deg, #B8860B, transparent)' }} />
-          <div className="absolute top-0 right-0 h-full w-[1px]" style={{ background: 'linear-gradient(180deg, #B8860B, transparent)' }} />
-        </div>
-        <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block">
-          <div className="absolute bottom-0 left-0 w-full h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, transparent)' }} />
-          <div className="absolute bottom-0 left-0 h-full w-[1px]" style={{ background: 'linear-gradient(0deg, #B8860B, transparent)' }} />
-        </div>
-        <div className="absolute bottom-6 right-4 sm:bottom-8 sm:right-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block">
-          <div className="absolute bottom-0 right-0 w-full h-[1px]" style={{ background: 'linear-gradient(270deg, #B8860B, transparent)' }} />
-          <div className="absolute bottom-0 right-0 h-full w-[1px]" style={{ background: 'linear-gradient(0deg, #B8860B, transparent)' }} />
-        </div>
+        <div className="absolute top-6 left-4 sm:top-8 sm:left-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block rounded-tl-3xl border-t border-l border-gold-600/15" />
+        <div className="absolute top-6 right-4 sm:top-8 sm:right-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block rounded-tr-3xl border-t border-r border-gold-600/15" />
+        <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block rounded-bl-3xl border-b border-l border-gold-600/15" />
+        <div className="absolute bottom-6 right-4 sm:bottom-8 sm:right-8 w-14 h-14 sm:w-20 sm:h-20 hidden sm:block rounded-br-3xl border-b border-r border-gold-600/15" />
 
         {/* Content */}
         <div className="relative text-center px-4">
           <p className="text-gold-400 text-xs sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.4em] mb-3 sm:mb-4 animate-fade-in" style={{ textShadow: '0 0 20px rgba(212,175,55,0.3)' }}>
-            ✦ Get in Touch ✦
+            Get in Touch
           </p>
-          <h1 className="heading-display text-luxury-cream mb-4 animate-fade-in-up" style={{ textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}>
+          <h1 className="heading-display text-luxury-cream mb-4 animate-fade-in-up" style={{ textShadow: 'var(--heading-text-shadow)' }}>
             Contact <span className="text-gradient-gold">Us</span>
           </h1>
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in delay-100">
-            <div className="h-[1px] w-16 md:w-24" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
-            <span className="text-gold-500 text-xs">◆</span>
-            <div className="h-[1px] w-16 md:w-24" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
+            <div className="h-[1px] w-16 md:w-24 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
+            <div className="w-2 h-2 rounded-full bg-gold-500/50 shadow-[0_0_8px_rgba(184,134,11,0.3)]" />
+            <div className="h-[1px] w-16 md:w-24 rounded-full" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
           </div>
           <p className="text-luxury-cream/80 text-base sm:text-lg max-w-2xl mx-auto animate-fade-in-up delay-100">
             We&apos;d love to hear from you. Reach out for inquiries, appointments, or just to say hello.
@@ -153,7 +141,7 @@ export default function ContactPage() {
                 {contactInfo.map((info, index) => (
                   <div key={index} className="flex gap-5 group">
                     <div
-                      className="flex-shrink-0 w-14 h-14 border border-gold-800/40 flex items-center justify-center text-gold-400 group-hover:border-gold-500/60 transition-all duration-500"
+                      className="flex-shrink-0 w-14 h-14 border border-gold-800/40 flex items-center justify-center text-gold-400 group-hover:border-gold-500/60 transition-all duration-500 rounded-xl"
                       style={{ background: 'linear-gradient(135deg, rgba(var(--gold-accent),0.1), rgba(var(--overlay-section),0.5))' }}
                     >
                       {info.icon}
@@ -169,7 +157,7 @@ export default function ContactPage() {
               </div>
 
               {/* Map placeholder */}
-              <div className="relative aspect-video overflow-hidden border border-gold-900/30" style={{ backgroundColor: 'var(--bg-section-alt)' }}>
+              <div className="relative aspect-video overflow-hidden border border-gold-900/30 rounded-2xl" style={{ backgroundColor: 'var(--bg-section-alt)' }}>
                 <Image
                   src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80"
                   alt="Location"
@@ -182,7 +170,7 @@ export default function ContactPage() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <div
-                      className="w-14 h-14 mx-auto mb-3 flex items-center justify-center"
+                      className="w-14 h-14 mx-auto mb-3 flex items-center justify-center rounded-xl"
                       style={{
                         border: '1px solid rgba(184,134,11,0.5)',
                         background: 'linear-gradient(135deg, rgba(var(--gold-accent),0.2), rgba(var(--overlay-section),0.6))',
@@ -198,12 +186,7 @@ export default function ContactPage() {
                   </div>
                 </div>
                 {/* Gold border overlay */}
-                <div className="absolute inset-3 border border-gold-800/25" />
-                {/* Corner accents */}
-                <div className="absolute top-1 left-1 w-6 h-6 border-t border-l border-gold-600/40" />
-                <div className="absolute top-1 right-1 w-6 h-6 border-t border-r border-gold-600/40" />
-                <div className="absolute bottom-1 left-1 w-6 h-6 border-b border-l border-gold-600/40" />
-                <div className="absolute bottom-1 right-1 w-6 h-6 border-b border-r border-gold-600/40" />
+                <div className="absolute inset-3 border border-gold-800/25 rounded-xl" />
               </div>
             </div>
 
@@ -220,20 +203,15 @@ export default function ContactPage() {
 
               {isSubmitted ? (
                 <div
-                  className="relative p-14 text-center border border-gold-800/40 overflow-hidden"
+                  className="relative p-14 text-center border border-gold-800/40 overflow-hidden rounded-2xl"
                   style={{ backgroundColor: 'var(--input-bg)' }}
                 >
                   {/* Gold radial glow */}
                   <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at center, rgba(184,134,11,0.06) 0%, transparent 70%)' }} />
-                  {/* Corner accents */}
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-gold-600/40" />
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gold-600/40" />
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gold-600/40" />
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-gold-600/40" />
 
                   <div className="relative">
                     <div
-                      className="w-20 h-20 mx-auto mb-8 flex items-center justify-center"
+                      className="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl"
                       style={{
                         border: '1px solid rgba(184,134,11,0.6)',
                         background: 'linear-gradient(135deg, rgba(var(--gold-accent),0.2), rgba(var(--overlay-section),0.5))',
@@ -397,11 +375,11 @@ export default function ContactPage() {
       {/* Grand Separator */}
       <div className="relative py-4" style={{ backgroundColor: 'var(--bg-page)' }}>
         <div className="flex items-center justify-center gap-3">
-          <div className="h-[1px] w-16 md:w-32" style={{ background: 'linear-gradient(90deg, transparent, #5C4305)' }} />
-          <span className="text-gold-600 text-xs">✦</span>
-          <div className="h-[1px] w-8 md:w-16" style={{ background: 'linear-gradient(90deg, #5C4305, #D4AF37, #5C4305)' }} />
-          <span className="text-gold-600 text-xs">✦</span>
-          <div className="h-[1px] w-16 md:w-32" style={{ background: 'linear-gradient(270deg, transparent, #5C4305)' }} />
+          <div className="h-[1px] w-16 md:w-32 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, #5C4305)' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-gold-600/40 shadow-[0_0_6px_rgba(184,134,11,0.3)]" />
+          <div className="h-[1px] w-8 md:w-16 rounded-full" style={{ background: 'linear-gradient(90deg, #5C4305, #D4AF37, #5C4305)' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-gold-600/40 shadow-[0_0_6px_rgba(184,134,11,0.3)]" />
+          <div className="h-[1px] w-16 md:w-32 rounded-full" style={{ background: 'linear-gradient(270deg, transparent, #5C4305)' }} />
         </div>
       </div>
 
@@ -424,9 +402,9 @@ export default function ContactPage() {
           <div className="text-center mb-16">
             {/* Ornamental accent */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="h-[1px] w-12 md:w-20" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
-              <span className="text-gold-500 text-xs">✦</span>
-              <div className="h-[1px] w-12 md:w-20" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
+              <div className="h-[1px] w-12 md:w-20 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-gold-500/50 shadow-[0_0_6px_rgba(184,134,11,0.3)]" />
+              <div className="h-[1px] w-12 md:w-20 rounded-full" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
             </div>
             <p className="text-gold-400 text-sm uppercase tracking-[0.4em] mb-4" style={{ textShadow: '0 0 15px rgba(212,175,55,0.2)' }}>
               Common Questions

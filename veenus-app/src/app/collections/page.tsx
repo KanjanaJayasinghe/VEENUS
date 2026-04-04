@@ -33,10 +33,10 @@ export default function CollectionsPage() {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, rgba(184,134,11,0.08), transparent 60%)' }} />
 
         {/* Decorative corners */}
-        <div className="absolute top-28 left-8 w-20 h-20 border-t border-l border-gold-700/20 hidden lg:block" />
-        <div className="absolute top-28 right-8 w-20 h-20 border-t border-r border-gold-700/20 hidden lg:block" />
-        <div className="absolute bottom-8 left-8 w-20 h-20 border-b border-l border-gold-700/20 hidden lg:block" />
-        <div className="absolute bottom-8 right-8 w-20 h-20 border-b border-r border-gold-700/20 hidden lg:block" />
+        <div className="absolute top-28 left-8 w-20 h-20 rounded-tl-3xl border-t border-l border-gold-700/20 hidden lg:block" />
+        <div className="absolute top-28 right-8 w-20 h-20 rounded-tr-3xl border-t border-r border-gold-700/20 hidden lg:block" />
+        <div className="absolute bottom-8 left-8 w-20 h-20 rounded-bl-3xl border-b border-l border-gold-700/20 hidden lg:block" />
+        <div className="absolute bottom-8 right-8 w-20 h-20 rounded-br-3xl border-b border-r border-gold-700/20 hidden lg:block" />
 
         {/* Content */}
         <div className="relative text-center px-4">
@@ -113,8 +113,8 @@ export default function CollectionsPage() {
                 },
               ].map((item, index) => (
                 <div key={index} className="text-center group">
-                  <div className="w-20 h-20 mx-auto mb-6 border border-gold-700/30 flex items-center justify-center rotate-45 group-hover:border-gold-500/60 transition-all duration-500 group-hover:shadow-[0_0_20px_rgba(184,134,11,0.15)]">
-                    <span className="text-gold-400 text-2xl font-display -rotate-45">{index + 1}</span>
+                  <div className="w-20 h-20 mx-auto mb-6 border border-gold-700/30 flex items-center justify-center rounded-2xl group-hover:border-gold-500/60 transition-all duration-500 group-hover:shadow-[0_0_20px_rgba(184,134,11,0.15)]">
+                    <span className="text-gold-400 text-2xl font-display">{index + 1}</span>
                   </div>
                   <h3 className="text-gold-300 font-display text-lg mb-3 tracking-wider">{item.title}</h3>
                   <div className="w-8 h-[1px] mx-auto mb-4" style={{ background: 'linear-gradient(90deg, transparent, #5C4305, transparent)' }} />

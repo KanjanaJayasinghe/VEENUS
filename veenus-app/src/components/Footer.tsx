@@ -71,8 +71,7 @@ export default function Footer() {
 
       {/* Top gold ornamental border */}
       <div className="relative">
-        <div className="h-[2px] w-full" style={{ background: 'linear-gradient(90deg, transparent, #3D2E06, #5C4305, #B8860B, #D4AF37, #B8860B, #5C4305, #3D2E06, transparent)' }} />
-        <div className="h-[1px] w-full mt-[1px]" style={{ background: 'linear-gradient(90deg, transparent 20%, rgba(184,134,11,0.15), transparent 80%)' }} />
+        <div className="h-[1px] w-full" style={{ background: 'linear-gradient(90deg, transparent 10%, #3D2E06, #B8860B, #D4AF37, #B8860B, #3D2E06, transparent 90%)' }} />
       </div>
 
       <div className="relative container-luxury">
@@ -167,9 +166,9 @@ export default function Footer() {
 
         {/* Ornamental Divider */}
         <div className="flex items-center justify-center gap-4">
-          <div className="flex-1 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(184,134,11,0.3))' }} />
-          <span className="text-gold-600 text-lg">◆</span>
-          <div className="flex-1 h-[1px]" style={{ background: 'linear-gradient(90deg, rgba(184,134,11,0.3), transparent)' }} />
+          <div className="flex-1 h-[1px] rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(184,134,11,0.25))' }} />
+          <div className="w-2 h-2 rounded-full bg-gold-600/40 shadow-[0_0_8px_rgba(184,134,11,0.3)]" />
+          <div className="flex-1 h-[1px] rounded-full" style={{ background: 'linear-gradient(90deg, rgba(184,134,11,0.25), transparent)' }} />
         </div>
 
         {/* Bottom Footer */}

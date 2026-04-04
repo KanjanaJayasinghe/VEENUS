@@ -94,7 +94,7 @@ export default function CollectionPageClient() {
             </div>
           ) : (
             <div className="text-center py-20">
-              <span className="text-gold-600 text-3xl block mb-4">✦</span>
+              <span className="text-gold-600 text-3xl block mb-4">◎</span>
               <p className="text-luxury-cream/40 text-lg font-light">
                 New pieces coming soon. Stay tuned for updates.
               </p>

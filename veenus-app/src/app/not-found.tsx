@@ -18,22 +18,10 @@ export default function NotFound() {
       <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(180,130,20,0.06) 0%, transparent 60%)' }} />
 
       {/* Decorative corner frames */}
-      <div className="absolute top-24 left-8 w-20 h-20">
-        <div className="absolute top-0 left-0 w-full h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, transparent)' }} />
-        <div className="absolute top-0 left-0 h-full w-[1px]" style={{ background: 'linear-gradient(180deg, #B8860B, transparent)' }} />
-      </div>
-      <div className="absolute top-24 right-8 w-20 h-20">
-        <div className="absolute top-0 right-0 w-full h-[1px]" style={{ background: 'linear-gradient(270deg, #B8860B, transparent)' }} />
-        <div className="absolute top-0 right-0 h-full w-[1px]" style={{ background: 'linear-gradient(180deg, #B8860B, transparent)' }} />
-      </div>
-      <div className="absolute bottom-8 left-8 w-20 h-20">
-        <div className="absolute bottom-0 left-0 w-full h-[1px]" style={{ background: 'linear-gradient(90deg, #B8860B, transparent)' }} />
-        <div className="absolute bottom-0 left-0 h-full w-[1px]" style={{ background: 'linear-gradient(0deg, #B8860B, transparent)' }} />
-      </div>
-      <div className="absolute bottom-8 right-8 w-20 h-20">
-        <div className="absolute bottom-0 right-0 w-full h-[1px]" style={{ background: 'linear-gradient(270deg, #B8860B, transparent)' }} />
-        <div className="absolute bottom-0 right-0 h-full w-[1px]" style={{ background: 'linear-gradient(0deg, #B8860B, transparent)' }} />
-      </div>
+      <div className="absolute top-24 left-8 w-20 h-20 rounded-tl-3xl border-t border-l border-gold-600/15" />
+      <div className="absolute top-24 right-8 w-20 h-20 rounded-tr-3xl border-t border-r border-gold-600/15" />
+      <div className="absolute bottom-8 left-8 w-20 h-20 rounded-bl-3xl border-b border-l border-gold-600/15" />
+      <div className="absolute bottom-8 right-8 w-20 h-20 rounded-br-3xl border-b border-r border-gold-600/15" />
 
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden">
@@ -69,18 +57,18 @@ export default function NotFound() {
           </span>
           <div className="absolute inset-0 flex items-center justify-center">
             <div
-              className="w-28 h-28 rotate-45"
+              className="w-28 h-28 rounded-full"
               style={{
-                border: '1px solid rgba(184,134,11,0.3)',
+                border: '1px solid rgba(184,134,11,0.2)',
                 boxShadow: '0 0 30px rgba(184,134,11,0.1)',
               }}
             />
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div
-              className="w-16 h-16 rotate-45"
+              className="w-16 h-16 rounded-full"
               style={{
-                border: '1px solid rgba(184,134,11,0.2)',
+                border: '1px solid rgba(184,134,11,0.15)',
               }}
             />
           </div>
@@ -88,12 +76,12 @@ export default function NotFound() {
 
         {/* Ornamental divider */}
         <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="h-[1px] w-16 md:w-24" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
-          <span className="text-gold-500 text-xs">◆</span>
-          <div className="h-[1px] w-16 md:w-24" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
+          <div className="h-[1px] w-16 md:w-24 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, #B8860B)' }} />
+          <div className="w-2 h-2 rounded-full bg-gold-500/50 shadow-[0_0_8px_rgba(184,134,11,0.3)]" />
+          <div className="h-[1px] w-16 md:w-24 rounded-full" style={{ background: 'linear-gradient(270deg, transparent, #B8860B)' }} />
         </div>
 
-        <h1 className="font-display text-3xl md:text-4xl text-luxury-light mb-5" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+        <h1 className="font-display text-3xl md:text-4xl text-luxury-light mb-5" style={{ textShadow: 'var(--heading-text-shadow)' }}>
           Page Not Found
         </h1>
         <p className="text-gray-500 text-lg max-w-md mx-auto mb-10 leading-relaxed">

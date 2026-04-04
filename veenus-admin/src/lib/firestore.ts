@@ -14,16 +14,41 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Product, Category, Collection, Customer, Order, OrderItem, ProductColor } from '@/types';
 
-// ─── Image Upload ───
+// ─── Image Compression (client-side Canvas) ───
 
-export async function uploadProductImage(productId: string, dataUrl: string, index: number): Promise<string> {
-  // If already a URL (not base64), keep as-is
+function compressImage(dataUrl: string, maxWidth: number, maxHeight: number, quality: number): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/webp', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+// ─── Generic Image Upload (to Firebase Storage) ───
+
+async function uploadImage(path: string, dataUrl: string): Promise<string> {
   if (!dataUrl.startsWith('data:')) return dataUrl;
   try {
     const matches = dataUrl.match(/^data:(.+?);base64,(.+)$/);
     if (!matches) return '';
     const mimeType = matches[1];
-    const ext = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+    const ext = mimeType.includes('webp') ? 'webp' : mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
     const byteString = atob(matches[2]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
@@ -31,18 +56,41 @@ export async function uploadProductImage(productId: string, dataUrl: string, ind
       ia[i] = byteString.charCodeAt(i);
     }
     const blob = new Blob([ab], { type: mimeType });
-    const storageRef = ref(storage, `products/${productId}/${index}.${ext}`);
+    const storageRef = ref(storage, `${path}.${ext}`);
     await uploadBytes(storageRef, blob);
     return getDownloadURL(storageRef);
   } catch {
-    // Storage not enabled or upload failed — skip this image
     return '';
   }
+}
+
+// ─── Product Image Upload ───
+
+export async function uploadProductImage(productId: string, dataUrl: string, index: number): Promise<string> {
+  if (!dataUrl.startsWith('data:')) return dataUrl;
+  const compressed = await compressImage(dataUrl, 1200, 1500, 0.82);
+  return uploadImage(`products/${productId}/${index}`, compressed);
 }
 
 export async function uploadProductImages(productId: string, images: string[]): Promise<string[]> {
   const results = await Promise.all(images.map((img, i) => uploadProductImage(productId, img, i)));
   return results.filter(Boolean);
+}
+
+// ─── Collection Image Upload ───
+
+export async function uploadCollectionImage(collectionId: string, dataUrl: string): Promise<string> {
+  if (!dataUrl.startsWith('data:')) return dataUrl;
+  const compressed = await compressImage(dataUrl, 1600, 900, 0.82);
+  return uploadImage(`collections/${collectionId}/cover`, compressed);
+}
+
+// ─── Category Image Upload ───
+
+export async function uploadCategoryImage(categoryId: string, dataUrl: string): Promise<string> {
+  if (!dataUrl.startsWith('data:')) return dataUrl;
+  const compressed = await compressImage(dataUrl, 1200, 900, 0.82);
+  return uploadImage(`categories/${categoryId}/cover`, compressed);
 }
 
 // ─── Firestore document converters ───

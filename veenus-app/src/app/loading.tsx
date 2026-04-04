@@ -68,7 +68,7 @@ export default function Loading() {
         {/* Ornamental accent below */}
         <div className="flex items-center justify-center gap-2 mt-4">
           <div className="h-[1px] w-8" style={{ background: 'linear-gradient(90deg, transparent, #5C4305)' }} />
-          <div className="w-1 h-1 rotate-45" style={{ background: '#B8860B' }} />
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#B8860B', boxShadow: '0 0 6px rgba(184,134,11,0.4)' }} />
           <div className="h-[1px] w-8" style={{ background: 'linear-gradient(270deg, transparent, #5C4305)' }} />
         </div>
       </div>

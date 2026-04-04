@@ -124,12 +124,17 @@ export default function ProductEditClient({ params }: { params: { slug: string }
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    Array.from(files).forEach((file) => {
+    const remaining = 5 - formData.images.length;
+    if (remaining <= 0) { e.target.value = ''; return; }
+    Array.from(files).slice(0, remaining).forEach((file) => {
       if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
         const result = ev.target?.result as string;
-        setFormData((prev) => ({ ...prev, images: [...prev.images, result] }));
+        setFormData((prev) => {
+          if (prev.images.length >= 5) return prev;
+          return { ...prev, images: [...prev.images, result] };
+        });
       };
       reader.readAsDataURL(file);
     });
@@ -339,11 +344,16 @@ export default function ProductEditClient({ params }: { params: { slug: string }
         {/* Product Images */}
         <div className="admin-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[var(--text-primary)]">Product Images</h3>
+            <div>
+              <h3 className="text-base font-semibold text-[var(--text-primary)]">Product Images</h3>
+              <p className="text-xs text-[var(--text-dim)] mt-0.5">{formData.images.length}/5 images • Auto-compressed for fast loading</p>
+            </div>
+            {formData.images.length < 5 && (
             <label className="btn-outline text-xs px-3 py-1.5 cursor-pointer">
               + Upload Images
               <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
             </label>
+            )}
           </div>
           {formData.images.length === 0 ? (
             <label className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-[var(--border-hover)] rounded-lg cursor-pointer hover:border-gold-500/50 transition-colors">
@@ -368,6 +378,7 @@ export default function ProductEditClient({ params }: { params: { slug: string }
                   </button>
                 </div>
               ))}
+              {formData.images.length < 5 && (
               <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-[var(--border-hover)] rounded-lg cursor-pointer hover:border-gold-500/50 transition-colors">
                 <svg className="w-8 h-8 text-[var(--text-dim)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
@@ -375,6 +386,7 @@ export default function ProductEditClient({ params }: { params: { slug: string }
                 <span className="text-xs text-[var(--text-dim)] mt-1">Add more</span>
                 <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
               </label>
+              )}
             </div>
           )}
         </div>
