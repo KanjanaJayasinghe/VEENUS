@@ -32,8 +32,8 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
         />
 
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), 0.92), rgba(var(--image-overlay), 0.4), rgba(var(--image-overlay), 0.1))` }} />
-        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to right, rgba(var(--image-overlay), 0.2), transparent)` }} />
+        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), var(--card-ov-heavy)), rgba(var(--image-overlay), var(--card-ov-mid)), rgba(var(--image-overlay), var(--card-ov-light)))` }} />
+        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to right, rgba(var(--image-overlay), var(--card-ov-side)), transparent)` }} />
         
         {/* Gold glow on hover */}
         <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" style={{ background: 'radial-gradient(ellipse at center bottom, rgba(184,134,11,0.1), transparent 70%)' }} />

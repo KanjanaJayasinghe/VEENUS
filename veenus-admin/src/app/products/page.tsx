@@ -170,7 +170,7 @@ export default function ProductsPage() {
                   <td>
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/products/${product.slug}`}
+                        href={`/products/edit?slug=${product.slug}`}
                         className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--border)] transition-colors text-[var(--text-label)] hover:text-gold-400"
                         title="Edit"
                       >

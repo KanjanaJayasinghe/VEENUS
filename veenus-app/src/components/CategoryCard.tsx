@@ -25,7 +25,7 @@ export default function CategoryCard({ category, index = 0 }: CategoryCardProps)
         />
 
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), 0.92), rgba(var(--image-overlay), 0.3), transparent)` }} />
+        <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), var(--card-ov-heavy)), rgba(var(--image-overlay), var(--card-ov-light)), transparent)` }} />
 
         {/* Soft gold glow on hover */}
         <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" style={{ background: 'radial-gradient(circle at center, rgba(184,134,11,0.12), transparent 70%)' }} />

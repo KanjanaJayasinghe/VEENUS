@@ -78,9 +78,9 @@ export default function HeroSection() {
         </div>
       ))}
 
-      {/* Dark overlays – always dark for text readability on hero images */}
-      <div className="absolute inset-0" style={{ background: `linear-gradient(to right, rgba(var(--image-overlay), 0.93), rgba(var(--image-overlay-section), 0.65), rgba(var(--image-overlay-section), 0.35))` }} />
-      <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, rgba(var(--image-overlay), 0.45), transparent, rgba(var(--image-overlay), 0.95))` }} />
+      {/* Hero overlays – dark mode only, hidden in day theme via CSS */}
+      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to right, rgba(var(--hero-overlay), 0.93), rgba(var(--hero-overlay-section), 0.65), rgba(var(--hero-overlay-section), 0.35))` }} />
+      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to bottom, rgba(var(--hero-overlay), 0.45), transparent, rgba(var(--hero-overlay), 0.95))` }} />
       
       {/* Gold radial glow */}
       <div className="absolute inset-0 opacity-15" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(184,134,11,0.15), transparent 60%)' }} />

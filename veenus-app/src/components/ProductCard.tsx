@@ -33,9 +33,9 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
           
-          {/* Dark overlay gradient */}
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), 0.85), rgba(var(--image-overlay), 0.1), transparent)` }} />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), 0.92), rgba(var(--image-overlay), 0.2), transparent)` }} />
+          {/* Overlay gradient – removed in light mode via CSS vars */}
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), var(--product-card-ov)), rgba(var(--image-overlay), var(--product-card-ov-mid)), transparent)` }} />
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(to top, rgba(var(--image-overlay), var(--product-card-ov-hover)), rgba(var(--image-overlay), var(--product-card-ov-hover-mid)), transparent)` }} />
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">

@@ -44,32 +44,33 @@ function compressImage(dataUrl: string, maxWidth: number, maxHeight: number, qua
 
 async function uploadImage(path: string, dataUrl: string): Promise<string> {
   if (!dataUrl.startsWith('data:')) return dataUrl;
-  try {
-    const matches = dataUrl.match(/^data:(.+?);base64,(.+)$/);
-    if (!matches) return '';
-    const mimeType = matches[1];
-    const ext = mimeType.includes('webp') ? 'webp' : mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
-    const byteString = atob(matches[2]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeType });
-    const storageRef = ref(storage, `${path}.${ext}`);
-    await uploadBytes(storageRef, blob);
-    return getDownloadURL(storageRef);
-  } catch {
-    return '';
+  const matches = dataUrl.match(/^data:(.+?);base64,(.+)$/);
+  if (!matches) throw new Error('Invalid image data');
+  const mimeType = matches[1];
+  const ext = mimeType.includes('webp') ? 'webp' : mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+  const byteString = atob(matches[2]);
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
   }
+  const blob = new Blob([ab], { type: mimeType });
+  const storageRef = ref(storage, `${path}.${ext}`);
+  await uploadBytes(storageRef, blob);
+  return getDownloadURL(storageRef);
 }
 
 // ─── Product Image Upload ───
 
 export async function uploadProductImage(productId: string, dataUrl: string, index: number): Promise<string> {
   if (!dataUrl.startsWith('data:')) return dataUrl;
-  const compressed = await compressImage(dataUrl, 1200, 1500, 0.82);
-  return uploadImage(`products/${productId}/${index}`, compressed);
+  try {
+    const compressed = await compressImage(dataUrl, 1200, 1500, 0.82);
+    return await uploadImage(`products/${productId}/${index}`, compressed);
+  } catch (err) {
+    console.error(`Failed to upload product image ${index}:`, err);
+    return '';
+  }
 }
 
 export async function uploadProductImages(productId: string, images: string[]): Promise<string[]> {
