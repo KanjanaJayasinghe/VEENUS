@@ -131,9 +131,9 @@
   --luxury-cream: 38 35 32;
 
   /* ── Theme Backgrounds ── */
-  --bg-page: #FAF8F4;
-  --bg-section: #F5F2ED;
-  --bg-section-alt: #EDE9E2;
+  --bg-page: #FFFFFF;
+  --bg-section: #F8F8F8;
+  --bg-section-alt: #F2F2F2;
   --bg-input: #FFFFFF;
 
   /* ── Overlay Base ── */
@@ -169,16 +169,16 @@
   --card-shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.1), 0 5px 25px rgba(184, 134, 11, 0.1);
 
   /* ── Section ── */
-  --section-from: #F5F2ED;
-  --section-via: #EDE9E2;
-  --section-to: #F5F2ED;
+  --section-from: #F8F8F8;
+  --section-via: #F2F2F2;
+  --section-to: #F8F8F8;
   --section-radial: rgba(184, 134, 11, 0.06);
 
   /* ── Divider ── */
-  --divider-bg: #F5F2ED;
+  --divider-bg: #F8F8F8;
 
   /* ── Scrollbar ── */
-  --scrollbar-track: #EDE9E2;
+  --scrollbar-track: #EBEBEB;
 
   /* ── Pattern Opacity ── */
   --pattern-opacity: 0.04;
@@ -196,8 +196,8 @@
   --stats-bg: linear-gradient(135deg, #2C2418 0%, #1E1A14 30%, #28221A 50%, #1E1A14 70%, #2C2418 100%);
 
   /* Legacy variables */
-  --background: #FAF8F4;
-  --foreground: #2E2A24;
+  --background: #FFFFFF;
+  --foreground: #1A1816;
 
   /* ── Heading text shadow (none in light mode) ── */
   --heading-text-shadow: none;
@@ -620,7 +620,7 @@
 
 /* ── Section styling for light mode ── */
 [data-theme="light"] .section-luxury {
-  background: linear-gradient(180deg, #F5F2ED 0%, #EDE9E2 50%, #F5F2ED 100%);
+  background: linear-gradient(180deg, #F8F8F8 0%, #F2F2F2 50%, #F8F8F8 100%);
 }
 
 /* ── Header shadow for light mode ── */
