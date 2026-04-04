@@ -150,7 +150,7 @@ export default function Header() {
       <div className={`h-[1px] w-full transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} style={{ background: 'linear-gradient(90deg, transparent, rgba(184,134,11,0.3), transparent)' }} />
 
       {/* Mobile Menu */}
-      <div className={`lg:hidden fixed inset-0 z-40 transition-all duration-700 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+      <div className={`lg:hidden fixed inset-0 z-40 mobile-menu-overlay transition-all duration-700 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/background-optimized.webp')", opacity: 0.06 }} />
         <div className="absolute inset-0" style={{ backgroundColor: 'rgba(var(--image-overlay), 0.97)' }} />
         <div className="relative flex flex-col items-center justify-center h-full py-24 overflow-y-auto space-y-6 sm:space-y-8">

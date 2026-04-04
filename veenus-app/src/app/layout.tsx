@@ -168,10 +168,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="preload" href="/hero1.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero2.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero3.webp" as="image" type="image/webp" />
         <link rel="preload" href="/background-optimized.webp" as="image" type="image/webp" />
-        <link rel="preload" href="/_DSC8285.JPEG" as="image" type="image/jpeg" />
-        <link rel="preload" href="/_DSC8371.JPEG" as="image" type="image/jpeg" />
-        <link rel="preload" href="/DSC_4143.JPEG" as="image" type="image/jpeg" />
         <link rel="canonical" href={SITE_URL} />
         <meta name="theme-color" content="#0a0a0a" />
         <script

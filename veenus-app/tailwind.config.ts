@@ -91,8 +91,8 @@ const config: Config = {
           '100%': { backgroundPosition: '200% 0' },
         },
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-20px)' },
+          '0%, 100%': { transform: 'translate3d(0, 0px, 0)' },
+          '50%': { transform: 'translate3d(0, -18px, 0)' },
         },
         glow: {
           '0%': { boxShadow: '0 0 20px rgba(184,134,11,0.2), 0 0 40px rgba(184,134,11,0.1)' },

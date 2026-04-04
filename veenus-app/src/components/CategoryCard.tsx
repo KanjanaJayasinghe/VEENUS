@@ -33,7 +33,7 @@ export default function CategoryCard({ category, index = 0 }: CategoryCardProps)
         {/* Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-end p-6 pb-8 text-center">
           {/* Category Name */}
-          <h3 className="font-display text-xl sm:text-2xl md:text-3xl text-luxury-cream group-hover:text-gold-300 transition-all duration-500" style={{ textShadow: '0 2px 15px rgba(0,0,0,0.8)' }}>
+          <h3 className="card-overlay-title font-display text-xl sm:text-2xl md:text-3xl text-luxury-cream group-hover:text-gold-300 transition-all duration-500" style={{ textShadow: '0 2px 15px rgba(0,0,0,0.8)' }}>
             {category.name}
           </h3>
           

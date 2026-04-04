@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const heroSlides = [
   {
-    image: '/_DSC8285.JPEG',
+    image: '/hero1.webp',
     title: 'Noir Elegance',
     subtitle: 'New Collection',
     description: 'Discover the art of timeless sophistication in every thread',
@@ -14,7 +14,7 @@ const heroSlides = [
     href: '/collections',
   },
   {
-    image: '/_DSC8371.JPEG',
+    image: '/hero2.webp',
     title: 'Golden Hour',
     subtitle: 'Latest Arrivals',
     description: 'Embrace the warmth of luxury woven in gold',
@@ -22,7 +22,7 @@ const heroSlides = [
     href: '/categories',
   },
   {
-    image: '/DSC_4143.JPEG',
+    image: '/hero3.webp',
     title: 'Midnight Royale',
     subtitle: 'Exclusive Collection',
     description: 'For those who command attention & radiate power',
@@ -58,14 +58,15 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative h-screen min-h-[550px] sm:min-h-[650px] md:min-h-[800px] overflow-hidden">
+    <section className="hero-section relative h-screen min-h-[550px] sm:min-h-[650px] md:min-h-[800px] overflow-hidden">
       {/* Background Images */}
       {heroSlides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-all duration-[1500ms] ${
+          className={`absolute inset-0 transition-[opacity,transform] duration-[1200ms] ease-in-out ${
             index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
           }`}
+          style={{ willChange: 'opacity, transform' }}
         >
           <Image
             src={slide.image}
@@ -79,8 +80,12 @@ export default function HeroSection() {
       ))}
 
       {/* Hero overlays – dark mode only, hidden in day theme via CSS */}
-      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to right, rgba(var(--hero-overlay), 0.93), rgba(var(--hero-overlay-section), 0.65), rgba(var(--hero-overlay-section), 0.35))` }} />
-      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to bottom, rgba(var(--hero-overlay), 0.45), transparent, rgba(var(--hero-overlay), 0.95))` }} />
+      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to right, rgba(var(--hero-overlay), 0.65), rgba(var(--hero-overlay-section), 0.35), rgba(var(--hero-overlay-section), 0.10))` }} />
+      <div className="absolute inset-0 hero-dark-overlay" style={{ background: `linear-gradient(to bottom, rgba(var(--hero-overlay), 0.20), transparent, rgba(var(--hero-overlay), 0.70))` }} />
+
+      {/* Light mode overlay – soft gradient so dark text is readable on photos */}
+      <div className="hero-light-overlay absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(40,38,36,0.52) 0%, rgba(40,38,36,0.30) 50%, rgba(40,38,36,0.15) 70%, transparent 100%)' }} />
+      <div className="hero-light-overlay absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(40,38,36,0.15) 0%, transparent 40%, rgba(40,38,36,0.50) 100%)' }} />
       
       {/* Gold radial glow */}
       <div className="absolute inset-0 opacity-15" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(184,134,11,0.15), transparent 60%)' }} />
@@ -90,18 +95,19 @@ export default function HeroSection() {
 
       {/* Animated Gold Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(30)].map((_, i) => (
+        {[...Array(12)].map((_, i) => (
           <div
             key={i}
             className="absolute rounded-full animate-float"
             style={{
-              width: `${1 + Math.random() * 3}px`,
-              height: `${1 + Math.random() * 3}px`,
-              background: `radial-gradient(circle, rgba(212,175,55,${0.3 + Math.random() * 0.4}), transparent)`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${6 + Math.random() * 6}s`,
+              width: `${1.5 + (i % 3)}px`,
+              height: `${1.5 + (i % 3)}px`,
+              background: `radial-gradient(circle, rgba(212,175,55,${0.3 + (i % 4) * 0.1}), transparent)`,
+              left: `${(i * 8.3) % 100}%`,
+              top: `${(i * 7.7) % 100}%`,
+              animationDelay: `${(i * 0.7) % 8}s`,
+              animationDuration: `${7 + (i % 4)}s`,
+              willChange: 'transform',
             }}
           />
         ))}
@@ -119,6 +125,7 @@ export default function HeroSection() {
           {/* Ornamental Line */}
           <div
             className={`overflow-hidden mb-8 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500`}
+            style={{ willChange: 'opacity' }}
           >
             <div className="flex items-center gap-3 animate-fade-in-up">
               <div className="w-12 h-[2px] rounded-full" style={{ background: 'linear-gradient(90deg, #D4AF37, transparent)' }} />
@@ -128,7 +135,8 @@ export default function HeroSection() {
 
           {/* Subtitle */}
           <div
-            className={`overflow-hidden mb-5 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-all duration-700`}
+            className={`overflow-hidden mb-5 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-[opacity,transform] duration-700 ease-out`}
+            style={{ willChange: 'opacity, transform' }}
           >
             <p className="text-gold-400 text-xs md:text-sm uppercase tracking-[0.5em] font-medium animate-fade-in-up" style={{ textShadow: '0 0 20px rgba(184,134,11,0.4)' }}>
               {heroSlides[currentSlide].subtitle}
@@ -137,17 +145,18 @@ export default function HeroSection() {
 
           {/* Title */}
           <div
-            className={`overflow-hidden mb-8 ${isAnimating ? 'opacity-0 translate-y-6' : 'opacity-100 translate-y-0'} transition-all duration-700 delay-100`}
+            className={`overflow-hidden mb-8 ${isAnimating ? 'opacity-0 translate-y-6' : 'opacity-100 translate-y-0'} transition-[opacity,transform] duration-700 ease-out delay-100`}
+            style={{ willChange: 'opacity, transform' }}
           >
             <h1 className="font-display text-4xl sm:text-6xl md:text-8xl lg:text-9xl leading-[0.9] animate-fade-in-up delay-100">
-              <span className="text-gradient-gold" style={{ textShadow: '0 4px 30px rgba(184,134,11,0.3)' }}>
+              <span className="text-gradient-gold hero-title-text" style={{ textShadow: '0 4px 30px rgba(184,134,11,0.3)' }}>
                 {heroSlides[currentSlide].title}
               </span>
             </h1>
           </div>
 
           {/* Decorative divider */}
-          <div className={`mb-8 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500 delay-150`}>
+          <div className={`mb-8 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-500 delay-150`} style={{ willChange: 'opacity' }}>
             <div className="flex items-center gap-3">
               <div className="w-20 h-[2px] rounded-full" style={{ background: 'linear-gradient(90deg, #B8860B, #D4AF37)' }} />
               <div className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
@@ -157,7 +166,8 @@ export default function HeroSection() {
 
           {/* Description */}
           <div
-            className={`overflow-hidden mb-12 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-all duration-700 delay-200`}
+            className={`overflow-hidden mb-12 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-[opacity,transform] duration-700 ease-out delay-200`}
+            style={{ willChange: 'opacity, transform' }}
           >
             <p className="text-base sm:text-xl md:text-2xl lg:text-3xl text-luxury-cream/70 font-light tracking-wide leading-relaxed animate-fade-in-up delay-200 max-w-2xl">
               {heroSlides[currentSlide].description}
@@ -166,7 +176,8 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div
-            className={`overflow-hidden flex flex-wrap gap-3 sm:gap-6 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-all duration-700 delay-300`}
+            className={`overflow-hidden flex flex-wrap gap-3 sm:gap-6 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'} transition-[opacity,transform] duration-700 ease-out delay-300`}
+            style={{ willChange: 'opacity, transform' }}
           >
             <Link
               href={heroSlides[currentSlide].href}

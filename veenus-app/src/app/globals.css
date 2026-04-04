@@ -127,8 +127,8 @@
   --luxury-dark: 250 249 246;
   --luxury-charcoal: 245 243 239;
   --luxury-gray: 238 236 232;
-  --luxury-light: 184 134 11;
-  --luxury-cream: 197 160 40;
+  --luxury-light: 26 24 22;
+  --luxury-cream: 38 35 32;
 
   /* ── Theme Backgrounds ── */
   --bg-page: #FAF8F4;
@@ -515,11 +515,12 @@
 /* LIGHT THEME – COMPONENT OVERRIDES                      */
 /* ═══════════════════════════════════════════════════════ */
 [data-theme="light"] .text-gradient-gold {
-  background: linear-gradient(135deg, #3D2D03 0%, #5C4305 20%, #7A5A07 40%, #9A7209 50%, #7A5A07 60%, #5C4305 80%, #3D2D03 100%);
+  background: linear-gradient(135deg, #1A1610 0%, #2C2620 25%, #3D3530 50%, #2C2620 75%, #1A1610 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: none;
 }
 
 [data-theme="light"] .btn-outline {
@@ -556,10 +557,10 @@
 
 /* ── Light mode text overrides for readability ── */
 [data-theme="light"] .text-luxury-cream {
-  color: #C5A028;
+  color: #1A1816;
 }
 [data-theme="light"] .text-luxury-light {
-  color: #B8860B;
+  color: #2C2926;
 }
 
 /* ── Hero overlays: hidden in day theme (image shows clean) ── */
@@ -567,27 +568,38 @@
   display: none;
 }
 
-/* Gray text mapping for light mode - richer tones */
-[data-theme="light"] .text-gray-300 { color: #D4AF37; }
-[data-theme="light"] .text-gray-400 { color: #C5A028; }
-[data-theme="light"] .text-gray-500 { color: #B8860B; }
+/* Light mode hero overlay: hidden in dark theme */
+.hero-light-overlay {
+  display: none;
+}
+[data-theme="light"] .hero-light-overlay {
+  display: block;
+}
 
-/* Opacity text overrides: proper contrast on light backgrounds */
-[data-theme="light"] .text-luxury-cream\/20 { color: rgba(197, 160, 40, 0.5); }
-[data-theme="light"] .text-luxury-cream\/25 { color: rgba(197, 160, 40, 0.55); }
-[data-theme="light"] .text-luxury-cream\/30 { color: rgba(197, 160, 40, 0.6); }
-[data-theme="light"] .text-luxury-cream\/35 { color: rgba(197, 160, 40, 0.65); }
-[data-theme="light"] .text-luxury-cream\/40 { color: rgba(197, 160, 40, 0.7); }
-[data-theme="light"] .text-luxury-cream\/50 { color: rgba(197, 160, 40, 0.75); }
-[data-theme="light"] .text-luxury-cream\/60 { color: rgba(197, 160, 40, 0.82); }
-[data-theme="light"] .text-luxury-cream\/70 { color: rgba(197, 160, 40, 0.88); }
-[data-theme="light"] .text-luxury-cream\/80 { color: rgba(197, 160, 40, 0.92); }
+/* Hero title: keep gold gradient in light mode since it's on photo */
+[data-theme="light"] .hero-title-text {
+  background: linear-gradient(135deg, #7A5A07 0%, #B8860B 25%, #D4AF37 50%, #B8860B 75%, #7A5A07 100%) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
 
-/* Gold text – warm and rich on light backgrounds */
-[data-theme="light"] .text-gold-300 { color: #8A6A08; }
-[data-theme="light"] .text-gold-400 { color: #7A5A07; }
-[data-theme="light"] .text-gold-500 { color: #6B4F06; }
-[data-theme="light"] .text-gold-600 { color: #5C4305; }
+/* Gray text – natural gray values (no override needed) */
+
+/* Opacity text overrides: dark charcoal on light backgrounds */
+[data-theme="light"] .text-luxury-cream\/20 { color: rgba(26, 24, 22, 0.32); }
+[data-theme="light"] .text-luxury-cream\/25 { color: rgba(26, 24, 22, 0.42); }
+[data-theme="light"] .text-luxury-cream\/30 { color: rgba(26, 24, 22, 0.52); }
+[data-theme="light"] .text-luxury-cream\/35 { color: rgba(26, 24, 22, 0.60); }
+[data-theme="light"] .text-luxury-cream\/40 { color: rgba(26, 24, 22, 0.65); }
+[data-theme="light"] .text-luxury-cream\/50 { color: rgba(26, 24, 22, 0.72); }
+[data-theme="light"] .text-luxury-cream\/60 { color: rgba(26, 24, 22, 0.80); }
+[data-theme="light"] .text-luxury-cream\/70 { color: rgba(26, 24, 22, 0.87); }
+[data-theme="light"] .text-luxury-cream\/80 { color: rgba(26, 24, 22, 0.93); }
+
+/* Gold text – stays gold in light mode (accents, prices, labels) */
+/* Gold is the brand accent colour – looks premium on cream backgrounds */
 
 /* Gold border adjustments for light mode */
 [data-theme="light"] .border-gold-600\/15 { border-color: rgba(122, 90, 7, 0.18); }
@@ -622,12 +634,12 @@
 [data-theme="light"] textarea {
   background-color: #FFFFFF;
   border-color: rgba(154, 114, 9, 0.22);
-  color: #7A5A07;
+  color: #1A1816;
 }
 
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder {
-  color: rgba(139, 107, 8, 0.4);
+  color: rgba(26, 24, 22, 0.38);
 }
 
 /* ── Light mode stats section - keep rich dark for contrast ── */
@@ -642,6 +654,89 @@
 }
 [data-theme="light"] .hero-image-section .text-luxury-cream\/80 { color: rgba(232, 220, 200, 0.85); }
 [data-theme="light"] .hero-image-section .text-luxury-cream\/40 { color: rgba(232, 220, 200, 0.5); }
+
+/* ── Collection / Category card overlay text: always white on dark image bg ── */
+[data-theme="light"] .card-overlay-title {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+[data-theme="light"] .card-overlay-title:hover,
+[data-theme="light"] .group:hover .card-overlay-title {
+  color: #D4AF37 !important;
+  -webkit-text-fill-color: #D4AF37 !important;
+}
+[data-theme="light"] .card-overlay-desc {
+  color: rgba(255, 255, 255, 0.65) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+}
+[data-theme="light"] .card-overlay-tag {
+  color: #D4AF37 !important;
+  -webkit-text-fill-color: #D4AF37 !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+[data-theme="light"] .card-overlay-cta {
+  color: #D4AF37 !important;
+  -webkit-text-fill-color: #D4AF37 !important;
+}
+
+/* ── Hero section: text must be light/white/gold on photo background ── */
+[data-theme="light"] section.hero-section .text-gold-400 {
+  color: #D4AF37 !important;
+}
+[data-theme="light"] section.hero-section .text-gold-300 {
+  color: #D4AF37 !important;
+}
+[data-theme="light"] section.hero-section .text-luxury-cream\/70 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+[data-theme="light"] section.hero-section .text-luxury-cream\/80 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+[data-theme="light"] section.hero-section .text-luxury-cream {
+  color: #FFFFFF !important;
+}
+[data-theme="light"] section.hero-section .bg-gold-400 {
+  background-color: #D4AF37 !important;
+}
+[data-theme="light"] section.hero-section .btn-outline {
+  color: #D4AF37 !important;
+  border-color: rgba(212, 175, 55, 0.6) !important;
+}
+[data-theme="light"] section.hero-section .btn-outline:hover {
+  color: #050505 !important;
+}
+
+/* ── Header: on transparent background (hero photo), use white text ── */
+[data-theme="light"] header:not(.luxury-glass) .text-luxury-cream\/80 {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+[data-theme="light"] header:not(.luxury-glass) .text-gold-300 {
+  color: #D4AF37 !important;
+  -webkit-text-fill-color: #D4AF37 !important;
+}
+/* Header: on scrolled glass background, use dark text */
+[data-theme="light"] header.luxury-glass .text-luxury-cream\/80 {
+  color: rgba(26, 24, 22, 0.88) !important;
+}
+[data-theme="light"] header.luxury-glass .text-gold-300 {
+  color: #7A5A07 !important;
+  -webkit-text-fill-color: #7A5A07 !important;
+}
+[data-theme="light"] header.luxury-glass .hover\:text-gold-300:hover {
+  color: #B8860B !important;
+  -webkit-text-fill-color: #B8860B !important;
+}
+
+/* ── Mobile menu overlay: text stays cream/light on its dark overlay bg ── */
+[data-theme="light"] .mobile-menu-overlay .text-luxury-cream\/80 {
+  color: rgba(232, 220, 200, 0.85) !important;
+}
+[data-theme="light"] .mobile-menu-overlay .text-gradient-gold {
+  background: linear-gradient(135deg, #7A5A07, #B8860B, #D4AF37, #B8860B, #7A5A07) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
 
 /* ── Light mode footer: keep dark and premium ── */
 [data-theme="light"] footer {

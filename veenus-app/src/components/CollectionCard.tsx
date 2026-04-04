@@ -44,7 +44,7 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
         }`}>
           {/* Season Tag */}
           {collection.season && (
-            <span className={`inline-block self-start px-4 py-1.5 rounded-full backdrop-blur-md text-gold-300 uppercase tracking-[0.2em] border border-gold-600/25 ${
+            <span className={`card-overlay-tag inline-block self-start px-4 py-1.5 rounded-full backdrop-blur-md text-gold-300 uppercase tracking-[0.2em] border border-gold-600/25 ${
               isLarge ? 'text-[10px] mb-4' : 'text-[9px] mb-3'
             }`} style={{ background: 'var(--badge-bg)' }}>
               {collection.season} {collection.year}
@@ -53,7 +53,7 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
 
           {/* Title */}
           <h3
-            className={`font-display text-luxury-cream group-hover:text-gold-300 transition-all duration-500 ${
+            className={`card-overlay-title font-display text-luxury-cream group-hover:text-gold-300 transition-all duration-500 ${
               isLarge ? 'text-2xl sm:text-3xl md:text-5xl mb-3' : 'text-lg sm:text-xl md:text-2xl mb-2'
             }`}
             style={{ textShadow: '0 2px 15px rgba(0,0,0,0.5)' }}
@@ -63,7 +63,7 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
 
           {/* Description */}
           <p
-            className={`text-luxury-cream/50 font-light ${
+            className={`card-overlay-desc text-luxury-cream/50 font-light ${
               isLarge ? 'text-sm md:text-base max-w-2xl line-clamp-2 mb-5' : 'text-xs md:text-sm line-clamp-2 mb-4'
             }`}
           >
@@ -71,7 +71,7 @@ export default function CollectionCard({ collection, index = 0, size = 'default'
           </p>
 
           {/* CTA */}
-          <div className={`flex items-center gap-2 text-gold-400 font-semibold uppercase group-hover:gap-4 transition-all duration-500 ${
+          <div className={`card-overlay-cta flex items-center gap-2 text-gold-400 font-semibold uppercase group-hover:gap-4 transition-all duration-500 ${
             isLarge ? 'text-xs tracking-[0.25em]' : 'text-[10px] tracking-[0.2em]'
           }`}>
             <span>Explore</span>

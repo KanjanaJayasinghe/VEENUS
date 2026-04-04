@@ -136,7 +136,7 @@ export default function Home() {
               </div>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 sm:mb-8 leading-[1.1]">
                 <span className="text-luxury-cream">Crafted with</span>{' '}
-                <span className="text-gradient-gold italic">Passion</span>
+                <span className="text-gradient-gold italic hero-title-text">Passion</span>
                 <br />
                 <span className="text-luxury-cream">&amp; Precision</span>
               </h2>
@@ -186,7 +186,7 @@ export default function Home() {
               { number: '15+', label: 'Years of Excellence' },
             ].map((stat, index) => (
               <div key={index} className="text-center group">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-display text-gradient-gold mb-3" style={{ textShadow: '0 0 30px rgba(184,134,11,0.2)' }}>
+                <div className="text-3xl sm:text-4xl md:text-5xl font-display text-gradient-gold hero-title-text mb-3" style={{ textShadow: '0 0 30px rgba(184,134,11,0.2)' }}>
                   {stat.number}
                 </div>
                 <div className="w-8 h-[1px] mx-auto mb-3" style={{ background: 'linear-gradient(90deg, transparent, #B8860B, transparent)' }} />
