@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db, storage } from './firebase';
 import {
   collection,
   doc,
@@ -11,7 +11,39 @@ import {
   orderBy,
   Unsubscribe,
 } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Product, Category, Collection, Customer, Order, OrderItem, ProductColor } from '@/types';
+
+// ─── Image Upload ───
+
+export async function uploadProductImage(productId: string, dataUrl: string, index: number): Promise<string> {
+  // If already a URL (not base64), keep as-is
+  if (!dataUrl.startsWith('data:')) return dataUrl;
+  try {
+    const matches = dataUrl.match(/^data:(.+?);base64,(.+)$/);
+    if (!matches) return '';
+    const mimeType = matches[1];
+    const ext = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+    const byteString = atob(matches[2]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([ab], { type: mimeType });
+    const storageRef = ref(storage, `products/${productId}/${index}.${ext}`);
+    await uploadBytes(storageRef, blob);
+    return getDownloadURL(storageRef);
+  } catch {
+    // Storage not enabled or upload failed — skip this image
+    return '';
+  }
+}
+
+export async function uploadProductImages(productId: string, images: string[]): Promise<string[]> {
+  const results = await Promise.all(images.map((img, i) => uploadProductImage(productId, img, i)));
+  return results.filter(Boolean);
+}
 
 // ─── Firestore document converters ───
 
@@ -145,11 +177,10 @@ export async function getProducts(): Promise<{ products: Product[]; categories: 
 }
 
 export async function saveProduct(product: Product): Promise<void> {
-  const productDoc: Omit<ProductDoc, 'id'> = {
+  const productDoc: Record<string, unknown> = {
     name: product.name,
     slug: product.slug,
     price: product.price,
-    originalPrice: product.originalPrice,
     description: product.description,
     shortDescription: product.shortDescription,
     images: product.images,
@@ -162,12 +193,15 @@ export async function saveProduct(product: Product): Promise<void> {
     featured: product.featured,
     new: product.new,
     bestseller: product.bestseller,
-    stock: product.stock,
-    sku: product.sku,
+    stock: product.stock ?? 0,
+    sku: product.sku ?? '',
     status: product.status || 'active',
     createdAt: product.createdAt || new Date().toISOString().split('T')[0],
     updatedAt: new Date().toISOString().split('T')[0],
   };
+  if (product.originalPrice !== undefined) {
+    productDoc.originalPrice = product.originalPrice;
+  }
   await setDoc(doc(db, 'products', product.id), productDoc);
 }
 

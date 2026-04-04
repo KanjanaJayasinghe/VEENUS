@@ -2,13 +2,13 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDDljxT6fZ8BFOF4Z8rOoDcdF79KSbyp9U",
-  authDomain: "veenus-3451d.firebaseapp.com",
-  projectId: "veenus-3451d",
-  storageBucket: "veenus-3451d.firebasestorage.app",
-  messagingSenderId: "153200382480",
-  appId: "1:153200382480:web:f94c1b6236f1d4bd307095",
-  measurementId: "G-M0X1VEFNZR"
+  apiKey: "AIzaSyCSzZlEvZb_N0x326t06QHsZpgK-m9ilX4",
+  authDomain: "veenuskleding-802f1.firebaseapp.com",
+  projectId: "veenuskleding-802f1",
+  storageBucket: "veenuskleding-802f1.firebasestorage.app",
+  messagingSenderId: "1050257282594",
+  appId: "1:1050257282594:web:5dcca2cd1278e7bcc69c7b",
+  measurementId: "G-9T2HJ99BF1"
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];

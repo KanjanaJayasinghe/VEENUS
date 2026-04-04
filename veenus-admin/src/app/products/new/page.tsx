@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCategories, getCollections, saveProduct } from '@/lib/firestore';
+import { getCategories, getCollections, saveProduct, uploadProductImages } from '@/lib/firestore';
 import { Category, Collection } from '@/types';
 
 export default function NewProductPage() {
@@ -132,6 +132,7 @@ export default function NewProductPage() {
       const category = categories.find((c) => c.id === formData.category);
       const col = collections.find((c) => c.id === formData.collection);
       const productId = 'prod-' + Date.now();
+      const imageUrls = await uploadProductImages(productId, formData.images);
       await saveProduct({
         id: productId,
         name: formData.name,
@@ -140,7 +141,7 @@ export default function NewProductPage() {
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
         shortDescription: formData.shortDescription,
-        images: formData.images,
+        images: imageUrls,
         category: category || { id: '', name: '', slug: '', description: '', image: '' },
         collection: col,
         sizes: formData.sizes,
@@ -159,9 +160,10 @@ export default function NewProductPage() {
         setSaved(false);
         router.push('/products');
       }, 1500);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error saving product:', err);
-      alert('Failed to save product. Please try again.');
+      const msg = err instanceof Error ? err.message : String(err);
+      alert('Failed to save product: ' + msg);
     } finally {
       setSaving(false);
     }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getProducts, saveProduct, deleteProduct } from '@/lib/firestore';
+import { getProducts, saveProduct, deleteProduct, uploadProductImages } from '@/lib/firestore';
 import { Product, Category, Collection } from '@/types';
 
 export default function ProductEditClient({ params }: { params: { slug: string } }) {
@@ -146,6 +146,7 @@ export default function ProductEditClient({ params }: { params: { slug: string }
     try {
       const category = categories.find((c) => c.id === formData.category);
       const col = collections.find((c) => c.id === formData.collection);
+      const imageUrls = await uploadProductImages(product!.id, formData.images);
       await saveProduct({
         id: product!.id,
         name: formData.name,
@@ -154,7 +155,7 @@ export default function ProductEditClient({ params }: { params: { slug: string }
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
         shortDescription: formData.shortDescription,
-        images: formData.images,
+        images: imageUrls,
         category: category || product!.category,
         collection: col,
         sizes: formData.sizes,
@@ -170,9 +171,10 @@ export default function ProductEditClient({ params }: { params: { slug: string }
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error updating product:', err);
-      alert('Failed to update product.');
+      const msg = err instanceof Error ? err.message : String(err);
+      alert('Failed to update product: ' + msg);
     } finally {
       setSaving(false);
     }

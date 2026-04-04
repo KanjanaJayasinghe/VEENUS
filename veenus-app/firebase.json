@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "veenus",
+    "site": "veenuskleding-802f1",
     "public": "out",
     "ignore": [
       "firebase.json",
@@ -10,7 +10,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/404.html"
+        "destination": "/index.html"
       }
     ],
     "headers": [

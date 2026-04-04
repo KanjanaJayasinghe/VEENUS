@@ -1,6 +1,12 @@
 {
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "hosting": {
-    "site": "veenus-admin",
+    "site": "veenuskleding-admin",
     "public": "out",
     "ignore": [
       "firebase.json",
@@ -10,7 +16,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/404.html"
+        "destination": "/index.html"
       }
     ],
     "headers": [
