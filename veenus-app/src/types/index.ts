@@ -46,3 +46,50 @@ export interface NavItem {
   href: string;
   children?: NavItem[];
 }
+
+// ─── Lucky Wheel Types ───
+
+export interface WheelSegment {
+  id: string;
+  label: string;
+  type: 'try_again' | 'discount' | 'free_shipping';
+  value: number; // discount percentage (0 for try_again/free_shipping)
+  color: string;
+  textColor: string;
+}
+
+export interface LuckyWheelConfig {
+  id: string;
+  segments: WheelSegment[];
+  tryAgainThreshold: number; // consecutive try-again count before reward
+  globalTryAgainCounter: number;
+  maxSpinsPerMonth: number;
+  enabled: boolean;
+  updatedAt: string;
+}
+
+export interface UserSpinRecord {
+  odajdi: string; // document id
+  odajdiUserId: string;
+  month: string; // format: "2026-04"
+  spinCount: number;
+  spins: SpinResult[];
+}
+
+export interface SpinResult {
+  timestamp: string;
+  segmentType: 'try_again' | 'discount' | 'free_shipping';
+  value: number;
+  promoCode?: string;
+}
+
+export interface PromoCode {
+  id: string;
+  code: string;
+  type: 'discount' | 'free_shipping';
+  value: number; // percentage for discount, 0 for free_shipping
+  userId: string;
+  used: boolean;
+  createdAt: string;
+  expiresAt: string;
+}

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useStore } from '@/lib/StoreProvider';
+import { validatePromoCode, markPromoCodeUsed } from '@/lib/luckyWheel';
+import { PromoCode } from '@/types';
 
 interface OrderItem {
   productId: string;
@@ -32,6 +34,10 @@ export default function OrdersPage() {
   const [quantity, setQuantity] = useState(1);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
+  const [promoError, setPromoError] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const currentProduct = products.find((p) => p.id === selectedProduct);
 
@@ -62,6 +68,44 @@ export default function OrdersPage() {
     }, 0);
   };
 
+  const getDiscount = () => {
+    if (!appliedPromo) return 0;
+    if (appliedPromo.type === 'discount') {
+      return Math.round(getTotal() * (appliedPromo.value / 100));
+    }
+    return 0;
+  };
+
+  const getFinalTotal = () => {
+    return getTotal() - getDiscount();
+  };
+
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim()) return;
+    setPromoError('');
+    setPromoLoading(true);
+    try {
+      const promo = await validatePromoCode(promoInput);
+      if (!promo) {
+        setPromoError('Invalid or expired promo code.');
+        setAppliedPromo(null);
+      } else {
+        setAppliedPromo(promo);
+        setPromoError('');
+      }
+    } catch {
+      setPromoError('Failed to validate promo code.');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoInput('');
+    setPromoError('');
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-LK', {
       style: 'currency',
@@ -70,8 +114,15 @@ export default function OrdersPage() {
     }).format(price);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (appliedPromo) {
+      try {
+        await markPromoCodeUsed(appliedPromo.code);
+      } catch {
+        // Continue even if marking fails
+      }
+    }
     setOrderPlaced(true);
   };
 
@@ -533,8 +584,67 @@ export default function OrdersPage() {
                         </div>
                         <div className="flex justify-between text-xs">
                           <span className="text-luxury-cream/40">Shipping</span>
-                          <span className="text-gold-400/60 text-[10px]">Calculated later</span>
+                          <span className="text-gold-400/60 text-[10px]">
+                            {appliedPromo?.type === 'free_shipping' ? (
+                              <span className="text-green-400">FREE</span>
+                            ) : (
+                              'Calculated later'
+                            )}
+                          </span>
                         </div>
+                        {appliedPromo && appliedPromo.type === 'discount' && (
+                          <div className="flex justify-between text-xs">
+                            <span className="text-green-400/80">Discount ({appliedPromo.value}%)</span>
+                            <span className="text-green-400/80">-{formatPrice(getDiscount())}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Promo Code Input */}
+                      <div className="mb-6">
+                        <label className="block text-[10px] uppercase tracking-[0.2em] text-luxury-cream/40 mb-2">
+                          Promo Code
+                        </label>
+                        {appliedPromo ? (
+                          <div className="flex items-center justify-between p-3 border border-green-500/30 bg-green-500/10">
+                            <div>
+                              <span className="text-green-400 font-mono text-sm">{appliedPromo.code}</span>
+                              <span className="text-green-400/60 text-[10px] ml-2">
+                                {appliedPromo.type === 'discount'
+                                  ? `${appliedPromo.value}% off`
+                                  : 'Free shipping'}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleRemovePromo}
+                              className="text-red-400/60 hover:text-red-400 text-[10px] uppercase tracking-wider"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={promoInput}
+                              onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                              placeholder="Enter code"
+                              className="flex-1 bg-theme-input border border-gold-900/30 text-luxury-cream px-3 py-2 text-xs font-mono focus:outline-none focus:border-gold-500/50 transition-colors placeholder:text-luxury-cream/15"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleApplyPromo}
+                              disabled={promoLoading || !promoInput.trim()}
+                              className="px-3 py-2 text-[10px] uppercase tracking-wider border border-gold-500/30 text-gold-400 hover:bg-gold-500/10 transition-colors disabled:opacity-30"
+                            >
+                              {promoLoading ? '...' : 'Apply'}
+                            </button>
+                          </div>
+                        )}
+                        {promoError && (
+                          <p className="text-red-400 text-[10px] mt-1">{promoError}</p>
+                        )}
                       </div>
 
                       <div className="h-[1px] mb-4" style={{ background: 'linear-gradient(90deg, rgba(184,134,11,0.3), transparent)' }} />
@@ -542,7 +652,7 @@ export default function OrdersPage() {
                       <div className="flex justify-between items-center mb-8">
                         <span className="text-[11px] uppercase tracking-[0.3em] text-luxury-cream/60">Total</span>
                         <span className="text-gold-300 text-xl font-semibold" style={{ textShadow: '0 0 15px rgba(184,134,11,0.2)' }}>
-                          {formatPrice(getTotal())}
+                          {formatPrice(getFinalTotal())}
                         </span>
                       </div>
                     </>

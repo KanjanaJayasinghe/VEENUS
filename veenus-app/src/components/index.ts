@@ -7,3 +7,6 @@ export { default as HeroSection } from './HeroSection';
 export { default as SectionHeader } from './SectionHeader';
 export { default as ThemeProvider } from './ThemeProvider';
 export { useTheme } from './ThemeProvider';
+export { default as AuthModal } from './AuthModal';
+export { default as LuckyWheel } from './LuckyWheel';
+export { default as SpinResultPopup } from './SpinResultPopup';

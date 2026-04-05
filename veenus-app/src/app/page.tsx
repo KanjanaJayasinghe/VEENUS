@@ -11,6 +11,28 @@ export default function Home() {
   const featuredProducts = getFeaturedProducts(products);
   const newArrivals = getNewArrivals(products);
 
+  // Static fallback data for SEO - shown in HTML before JS hydrates
+  const seoCategories = [
+    { name: 'Dresses', slug: 'dresses', desc: 'Elegant designer dresses for every occasion' },
+    { name: 'Outerwear', slug: 'outerwear', desc: 'Premium luxury coats and jackets' },
+    { name: 'Tops', slug: 'tops', desc: 'Designer tops and blouses' },
+    { name: 'Bottoms', slug: 'bottoms', desc: 'Luxury skirts and trousers' },
+    { name: 'Party', slug: 'party', desc: 'Stunning party dresses and outfits' },
+  ];
+  const seoCollections = [
+    { name: 'Luxury', slug: 'luxury', desc: 'Timeless elegance redefined' },
+    { name: 'Office Wear', slug: 'office-wear', desc: 'Sophisticated professional attire' },
+    { name: 'Party Vibe', slug: 'party-vibe', desc: 'Stand out at every event' },
+    { name: 'Awrudu Season', slug: 'awrudu-season', desc: 'Celebrate in style' },
+  ];
+  const seoProducts = [
+    { name: 'Yellow Gown', slug: 'yellow-gown' },
+    { name: 'Black Floral Flow Dress', slug: 'black-floral-flow-dress' },
+    { name: 'Red Elegant Printed Gown', slug: 'red-elegant-printed-gown' },
+    { name: 'Multicolor Off Shoulder Party Dress', slug: 'multicolor-off-shoulder-party-dress' },
+    { name: 'White Classic Cottage Dress', slug: 'white-classic-cottage-dress' },
+  ];
+
   return (
     <>
       {/* Hero Section */}
@@ -25,9 +47,17 @@ export default function Home() {
             description="Discover our curated selection of luxury fashion, handcrafted for those who demand excellence"
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-            {categories.map((category, index) => (
-              <CategoryCard key={category.id} category={category} index={index} />
-            ))}
+            {categories.length > 0
+              ? categories.map((category, index) => (
+                  <CategoryCard key={category.id} category={category} index={index} />
+                ))
+              : seoCategories.map((cat) => (
+                  <Link key={cat.slug} href={`/categories/${cat.slug}/`} className="block text-center p-4 border border-gold-800/20 hover:border-gold-500/40 transition-all duration-300">
+                    <h3 className="font-display text-sm text-gold-300 tracking-wider uppercase">{cat.name}</h3>
+                    <p className="text-luxury-cream/30 text-xs mt-1">{cat.desc}</p>
+                  </Link>
+                ))
+            }
           </div>
         </div>
       </section>
@@ -53,8 +83,13 @@ export default function Home() {
             title="Noir Elegance"
             description="A celebration of timeless black, reimagined for the modern connoisseur of luxury"
           />
-          {collections[0] && (
+          {collections[0] ? (
             <CollectionCard collection={collections[0]} size="large" />
+          ) : (
+            <Link href="/collections/luxury/" className="block relative overflow-hidden border border-gold-800/20 hover:border-gold-500/40 transition-all duration-300 p-8 text-center">
+              <h3 className="font-display text-2xl text-gold-300 mb-2">Luxury Collection</h3>
+              <p className="text-luxury-cream/40 text-sm">Timeless elegance redefined – Explore Veenus Kleding&apos;s signature luxury collection</p>
+            </Link>
           )}
         </div>
       </section>
@@ -68,9 +103,18 @@ export default function Home() {
             description="Our most coveted pieces, selected for their exceptional quality and timeless design"
           />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-            {featuredProducts.slice(0, 4).map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+            {featuredProducts.length > 0
+              ? featuredProducts.slice(0, 4).map((product, index) => (
+                  <ProductCard key={product.id} product={product} index={index} />
+                ))
+              : seoProducts.slice(0, 4).map((p) => (
+                  <Link key={p.slug} href={`/products/${p.slug}/`} className="block p-4 border border-gold-800/20 hover:border-gold-500/40 transition-all duration-300">
+                    <div className="aspect-[3/4] bg-luxury-cream/5 mb-3" />
+                    <h3 className="font-display text-sm text-gold-300 tracking-wider">{p.name}</h3>
+                    <p className="text-luxury-cream/30 text-xs mt-1">Premium luxury fashion by Veenus Kleding</p>
+                  </Link>
+                ))
+            }
           </div>
           <div className="text-center mt-10">
             <Link href="/categories" className="btn-outline">
@@ -206,9 +250,78 @@ export default function Home() {
             description="Be the first to experience our latest creations, fresh from our ateliers"
           />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-            {newArrivals.slice(0, 4).map((product, index) => (
+            {newArrivals.length > 0 ? newArrivals.slice(0, 4).map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
+            )) : seoProducts.map((item) => (
+              <Link key={item.slug} href={`/products/${item.slug}/`} className="block border border-gold-800/20 hover:border-gold-500/40 transition-all duration-300 p-6">
+                <h3 className="font-display text-lg text-gold-300 mb-1">{item.name}</h3>
+                <p className="text-luxury-cream/40 text-xs">New arrival – {item.name} from Veenus Kleding</p>
+              </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Lucky Wheel Promotion Banner */}
+      <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundColor: 'var(--bg-section)' }} />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/background-optimized.webp')", opacity: 'var(--pattern-opacity)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.08) 0%, transparent 60%)' }} />
+        <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #5C4305, #B8860B, #5C4305, transparent)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #5C4305, #B8860B, #5C4305, transparent)' }} />
+
+        <div className="container-luxury relative">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16">
+            {/* Left: Wheel icon / visual */}
+            <div className="flex-shrink-0 relative">
+              <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 relative">
+                {/* Glow */}
+                <div className="absolute inset-0 rounded-full blur-[30px]" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.3) 0%, transparent 70%)' }} />
+                {/* Wheel visual */}
+                <div className="relative w-full h-full rounded-full border-2 border-gold-500/40 flex items-center justify-center" style={{ background: 'conic-gradient(from 0deg, #1a1a1a 0deg 36deg, #D4AF37 36deg 72deg, #1a1a1a 72deg 108deg, #F59E0B 108deg 144deg, #1a1a1a 144deg 180deg, #D4AF37 180deg 216deg, #1a1a1a 216deg 252deg, #F59E0B 252deg 288deg, #1a1a1a 288deg 324deg, #D4AF37 324deg 360deg)', boxShadow: '0 0 40px rgba(212,175,55,0.2), inset 0 0 40px rgba(0,0,0,0.5)' }}>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F5E6A3, #D4AF37, #8B6914)' }}>
+                    <span className="text-xl sm:text-2xl">🎰</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Content */}
+            <div className="text-center md:text-left flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 border border-gold-700/30 rounded-full bg-gold-900/10 mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
+                <span className="text-gold-400 text-[10px] uppercase tracking-[0.3em]">Limited Offer</span>
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-luxury-cream mb-3 leading-tight">
+                Spin the Wheel &{' '}
+                <span className="text-gradient-gold italic">Win Prizes</span>
+              </h2>
+              <p className="text-luxury-cream/40 text-sm sm:text-base leading-relaxed mb-6 max-w-lg">
+                Try your luck with our Lucky Wheel! Win exclusive discounts up to 25% off, free shipping, and more. Every spin is a chance to save on luxury fashion.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
+                <Link
+                  href="/lucky-wheel/"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3 font-display text-sm uppercase tracking-[0.2em] rounded-full transition-all duration-300 hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(135deg, #F5E6A3 0%, #D4AF37 30%, #B8860B 70%, #8B6914 100%)',
+                    color: '#000',
+                    boxShadow: '0 4px 20px rgba(212,175,55,0.3)',
+                  }}
+                >
+                  <span>🎡</span>
+                  Spin Now
+                </Link>
+                <div className="flex items-center justify-center md:justify-start gap-4 text-luxury-cream/30 text-xs">
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-gold-400">✦</span> Up to 25% Off
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-gold-400">✦</span> Free Shipping
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -223,8 +336,13 @@ export default function Home() {
             description="Each collection tells a unique story of elegance, artistry, and timeless craftsmanship"
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-            {collections.slice(1).map((collection, index) => (
+            {collections.length > 1 ? collections.slice(1).map((collection, index) => (
               <CollectionCard key={collection.id} collection={collection} index={index} />
+            )) : seoCollections.slice(1).map((item) => (
+              <Link key={item.slug} href={`/collections/${item.slug}/`} className="block border border-gold-800/20 hover:border-gold-500/40 transition-all duration-300 p-8 text-center">
+                <h3 className="font-display text-xl text-gold-300 mb-2">{item.name}</h3>
+                <p className="text-luxury-cream/40 text-sm">{item.desc}</p>
+              </Link>
             ))}
           </div>
         </div>

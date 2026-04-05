@@ -21,5 +21,18 @@ service cloud.firestore {
     match /customers/{document=**} {
       allow read, write: if true;
     }
+    // Lucky Wheel config - read for all, write for admin
+    match /luckyWheelConfig/{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    // User spin records - users can read/write their own
+    match /userSpins/{document=**} {
+      allow read, write: if true;
+    }
+    // Promo codes
+    match /promoCodes/{document=**} {
+      allow read, write: if true;
+    }
   }
 }

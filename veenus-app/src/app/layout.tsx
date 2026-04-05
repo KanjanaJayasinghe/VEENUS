@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Header, Footer, ThemeProvider } from "@/components";
 import { StoreProvider } from "@/lib/StoreProvider";
+import { AuthProvider } from "@/lib/AuthProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -103,9 +104,7 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   category: "fashion",
-  other: {
-    "google-site-verification": "YOUR_GOOGLE_VERIFICATION_CODE",
-  },
+
 };
 
 export default function RootLayout({
@@ -172,7 +171,6 @@ export default function RootLayout({
         <link rel="preload" href="/hero2.webp" as="image" type="image/webp" />
         <link rel="preload" href="/hero3.webp" as="image" type="image/webp" />
         <link rel="preload" href="/background-optimized.webp" as="image" type="image/webp" />
-        <link rel="canonical" href={SITE_URL} />
         <meta name="theme-color" content="#0a0a0a" />
         <script
           type="application/ld+json"
@@ -188,11 +186,13 @@ export default function RootLayout({
         style={{ backgroundColor: 'var(--bg-page)' }}
       >
         <ThemeProvider>
+          <AuthProvider>
           <StoreProvider>
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
           </StoreProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

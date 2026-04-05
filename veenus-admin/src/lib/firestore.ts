@@ -363,3 +363,52 @@ export async function updateOrderStatus(orderId: string, status: string): Promis
 export async function deleteOrder(id: string): Promise<void> {
   await deleteDoc(doc(db, 'orders', id));
 }
+
+// ─── Lucky Wheel Config ───
+
+import { LuckyWheelConfig, WheelSegment, PromoCode } from '@/types';
+
+const DEFAULT_SEGMENTS: WheelSegment[] = [
+  { id: '1', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },
+  { id: '2', label: '10% OFF', type: 'discount', value: 10, color: '#D4AF37', textColor: '#000000' },
+  { id: '3', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },
+  { id: '4', label: 'Free Shipping', type: 'free_shipping', value: 0, color: '#F59E0B', textColor: '#000000' },
+  { id: '5', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },
+  { id: '6', label: '25% OFF', type: 'discount', value: 25, color: '#D4AF37', textColor: '#000000' },
+  { id: '7', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },
+  { id: '8', label: 'LKR 200 OFF', type: 'discount', value: 5, color: '#F59E0B', textColor: '#000000' },
+  { id: '9', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },
+  { id: '10', label: 'LKR 500 OFF', type: 'discount', value: 15, color: '#D4AF37', textColor: '#000000' },
+];
+
+export async function getLuckyWheelConfig(): Promise<LuckyWheelConfig> {
+  const docRef = doc(db, 'luckyWheelConfig', 'main');
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { id: snap.id, ...snap.data() } as LuckyWheelConfig;
+  }
+  const config: Omit<LuckyWheelConfig, 'id'> = {
+    segments: DEFAULT_SEGMENTS,
+    tryAgainThreshold: 30,
+    globalTryAgainCounter: 0,
+    maxSpinsPerMonth: 3,
+    enabled: true,
+    updatedAt: new Date().toISOString(),
+  };
+  await setDoc(docRef, config);
+  return { id: 'main', ...config };
+}
+
+export async function saveLuckyWheelConfig(config: Omit<LuckyWheelConfig, 'id'>): Promise<void> {
+  const docRef = doc(db, 'luckyWheelConfig', 'main');
+  await setDoc(docRef, { ...config, updatedAt: new Date().toISOString() });
+}
+
+export async function getPromoCodes(): Promise<PromoCode[]> {
+  const snap = await getDocs(collection(db, 'promoCodes'));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as PromoCode));
+}
+
+export async function deletePromoCode(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'promoCodes', id));
+}

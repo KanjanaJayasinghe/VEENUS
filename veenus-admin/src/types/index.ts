@@ -123,3 +123,35 @@ export interface SidebarItem {
   icon: string;
   badge?: number;
 }
+
+// ─── Lucky Wheel Types ───
+
+export interface WheelSegment {
+  id: string;
+  label: string;
+  type: 'try_again' | 'discount' | 'free_shipping';
+  value: number;
+  color: string;
+  textColor: string;
+}
+
+export interface LuckyWheelConfig {
+  id: string;
+  segments: WheelSegment[];
+  tryAgainThreshold: number;
+  globalTryAgainCounter: number;
+  maxSpinsPerMonth: number;
+  enabled: boolean;
+  updatedAt: string;
+}
+
+export interface PromoCode {
+  id: string;
+  code: string;
+  type: 'discount' | 'free_shipping';
+  value: number;
+  userId: string;
+  used: boolean;
+  createdAt: string;
+  expiresAt: string;
+}
