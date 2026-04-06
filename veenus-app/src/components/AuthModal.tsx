@@ -58,11 +58,17 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
       await signInWithGoogle();
       handleClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong';
-      if (message.includes('popup-closed-by-user')) {
+      const code = (err as { code?: string })?.code ?? '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
         // User closed popup, not an error
+      } else if (code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for Google sign-in. Please contact support.');
+      } else if (code === 'auth/popup-blocked') {
+        setError('Popup was blocked by your browser. Please allow popups and try again.');
+      } else if (code === 'auth/operation-not-allowed') {
+        setError('Google sign-in is not enabled. Please contact support.');
       } else {
-        setError('Google sign-in failed. Please try again.');
+        setError(`Google sign-in failed (${code || 'unknown'}). Please try again.`);
       }
     } finally {
       setLoading(false);

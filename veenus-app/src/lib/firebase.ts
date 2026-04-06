@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCSzZlEvZb_N0x326t06QHsZpgK-m9ilX4",
-  authDomain: "veenuskleding-802f1.firebaseapp.com",
+  authDomain: "veenuskleding.com",
   projectId: "veenuskleding-802f1",
   storageBucket: "veenuskleding-802f1.firebasestorage.app",
   messagingSenderId: "1050257282594",

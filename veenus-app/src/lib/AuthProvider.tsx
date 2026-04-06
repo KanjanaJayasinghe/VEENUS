@@ -12,7 +12,27 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
+
+async function saveCustomerToFirestore(user: User) {
+  const ref = doc(db, 'customers', user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      name: user.displayName || '',
+      email: user.email || '',
+      phone: user.phoneNumber || '',
+      address: '',
+      city: '',
+      postalCode: '',
+      country: '',
+      totalOrders: 0,
+      totalSpent: 0,
+      createdAt: new Date().toISOString(),
+    });
+  }
+}
 
 interface AuthContextType {
   user: User | null;
@@ -53,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string, displayName: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName });
+    await saveCustomerToFirestore(cred.user);
   };
 
   const signOut = async () => {
@@ -65,7 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    await saveCustomerToFirestore(result.user);
   };
 
   return (

@@ -178,14 +178,19 @@ export default function Footer() {
               © {new Date().getFullYear()} Veenus Kleding. All rights reserved.
             </p>
             <div className="flex items-center gap-8">
-              <Link href="#" className="text-luxury-cream/25 hover:text-gold-400 text-xs tracking-[0.1em] uppercase transition-colors duration-300">
+              <Link href="/privacy-policy" className="text-luxury-cream/25 hover:text-gold-400 text-xs tracking-[0.1em] uppercase transition-colors duration-300">
                 Privacy Policy
               </Link>
               <span className="text-gold-900/30">|</span>
-              <Link href="#" className="text-luxury-cream/25 hover:text-gold-400 text-xs tracking-[0.1em] uppercase transition-colors duration-300">
+              <Link href="/terms" className="text-luxury-cream/25 hover:text-gold-400 text-xs tracking-[0.1em] uppercase transition-colors duration-300">
                 Terms of Service
               </Link>
             </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-gold-900/15 text-center">
+            <p className="text-luxury-cream/20 text-[11px] tracking-[0.1em]">
+              Designed &amp; Engineered By <span className="text-luxury-cream/30">Inspetra Lab (Pvt) LTD</span> &nbsp;|&nbsp; Contact: 070 470 4242 &nbsp;·&nbsp; 070 287 6406
+            </p>
           </div>
         </div>
       </div>
