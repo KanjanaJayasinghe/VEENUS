@@ -34,5 +34,9 @@ service cloud.firestore {
     match /promoCodes/{document=**} {
       allow read, write: if true;
     }
+    // Contact inquiries - anyone can create, admin can read/update
+    match /inquiries/{document=**} {
+      allow read, write: if true;
+    }
   }
 }

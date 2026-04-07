@@ -159,7 +159,7 @@ export default function Home() {
               {/* Floating accent image */}
               <div className="absolute -bottom-10 -right-10 w-56 h-56 hidden lg:block" style={{ boxShadow: 'var(--card-shadow-hover)' }}>
                 <Image
-                  src="/dsc4143-crafted.webp"
+                  src="/sangeeth.webp"
                   alt="Fashion Detail"
                   fill
                   className="object-cover"

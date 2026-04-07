@@ -12,7 +12,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Product, Category, Collection, Customer, Order, OrderItem, ProductColor } from '@/types';
+import { Product, Category, Collection, Customer, Order, OrderItem, ProductColor, Inquiry } from '@/types';
 
 // ─── Image Compression (client-side Canvas) ───
 
@@ -493,4 +493,15 @@ export async function getPromoCodes(): Promise<PromoCode[]> {
 
 export async function deletePromoCode(id: string): Promise<void> {
   await deleteDoc(doc(db, 'promoCodes', id));
+}
+
+// ─── Inquiries ───
+
+export async function getInquiries(): Promise<Inquiry[]> {
+  const snap = await getDocs(query(collection(db, 'inquiries'), orderBy('createdAt', 'desc')));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Inquiry));
+}
+
+export async function updateInquiryStatus(id: string, status: Inquiry['status']): Promise<void> {
+  await setDoc(doc(db, 'inquiries', id), { status }, { merge: true });
 }

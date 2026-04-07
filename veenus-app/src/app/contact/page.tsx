@@ -2,21 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { submitInquiry } from '@/lib/firestore';
 
 const contactInfo = [
-  {
-    title: 'Visit Our Atelier',
-    details: ['Keizersgracht 123', '1015 CW Amsterdam', 'The Netherlands'],
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
+
   {
     title: 'Contact Us',
-    details: ['+31 20 123 4567', 'hello@veenuskleding.com'],
+    details: ['+94 77 728 2858'],
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -25,7 +17,7 @@ const contactInfo = [
   },
   {
     title: 'Opening Hours',
-    details: ['Monday - Friday: 10:00 - 19:00', 'Saturday: 11:00 - 18:00', 'Sunday: By Appointment'],
+    details: ['Monday - Friday: 8:00 - 19:00', 'Saturday: 10:00 - 19:00', 'Sunday: 10:00 - 19:00'],
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -43,11 +35,21 @@ export default function ContactPage() {
     message: '',
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setIsSubmitted(true);
+    setIsLoading(true);
+    setSubmitError('');
+    try {
+      await submitInquiry(formData);
+      setIsSubmitted(true);
+    } catch {
+      setSubmitError('Failed to send message. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -302,7 +304,7 @@ export default function ContactPage() {
                         }}
                         onFocus={(e) => { e.target.style.borderColor = '#B8860B'; e.target.style.boxShadow = '0 0 15px rgba(184,134,11,0.15)'; }}
                         onBlur={(e) => { e.target.style.borderColor = 'rgba(92,67,5,0.3)'; e.target.style.boxShadow = 'none'; }}
-                        placeholder="+31 20 123 4567"
+                        placeholder="+94 77 728 2858"
                       />
                     </div>
                     <div>
@@ -358,13 +360,18 @@ export default function ContactPage() {
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
                     <p className="text-luxury-cream/40 text-xs uppercase tracking-wider">* Required fields</p>
-                    <button type="submit" className="btn-primary">
-                      Send Message
-                      <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+                    <button type="submit" className="btn-primary" disabled={isLoading}>
+                      {isLoading ? 'Sending...' : 'Send Message'}
+                      {!isLoading && (
+                        <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      )}
                     </button>
                   </div>
+                  {submitError && (
+                    <p className="text-red-400 text-sm mt-2">{submitError}</p>
+                  )}
                 </form>
               )}
             </div>

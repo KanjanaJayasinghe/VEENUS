@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  addDoc,
   updateDoc,
   increment,
   onSnapshot,
@@ -198,4 +199,20 @@ export async function updateOrderBankSlip(orderId: string, bankSlipUrl: string):
 
 export async function updateProductStock(productId: string, quantityChange: number): Promise<void> {
   await updateDoc(doc(db, 'products', productId), { stock: increment(quantityChange) });
+}
+
+// ─── Contact Inquiries ───
+
+export async function submitInquiry(data: {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+}): Promise<void> {
+  await addDoc(collection(db, 'inquiries'), {
+    ...data,
+    status: 'new',
+    createdAt: new Date().toISOString(),
+  });
 }

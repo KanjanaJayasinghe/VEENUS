@@ -424,21 +424,23 @@ export default function AboutPage() {
               <div className="grid grid-cols-2 gap-3 md:gap-4">
                 <div className="aspect-[4/5] relative group rounded-xl overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80"
+                    src="/sangeeth.webp"
                     alt="Fashion Model"
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 50vw, 25vw"
+                    priority
                   />
                   <div className="absolute inset-0 border border-gold-800/30 group-hover:border-gold-500/50 transition-colors duration-500 rounded-xl" />
                 </div>
                 <div className="aspect-[4/5] relative group rounded-xl overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80"
+                    src="/sangeeth2.webp"
                     alt="Fashion Detail"
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 50vw, 25vw"
+                    priority
                   />
                   <div className="absolute inset-0 border border-gold-800/30 group-hover:border-gold-500/50 transition-colors duration-500 rounded-xl" />
                 </div>

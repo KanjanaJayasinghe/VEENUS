@@ -160,3 +160,18 @@ export interface PromoCode {
   createdAt: string;
   expiresAt: string;
 }
+
+// ─── Inquiries ───
+
+export type InquiryStatus = 'new' | 'read' | 'replied';
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  status: InquiryStatus;
+  createdAt: string;
+}

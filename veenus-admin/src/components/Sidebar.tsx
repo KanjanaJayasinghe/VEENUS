@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Categories', href: '/categories', icon: '🏷️' },
   { label: 'Collections', href: '/collections', icon: '✨' },
   { label: 'Customers', href: '/customers', icon: '👥' },
+  { label: 'Inquiries', href: '/inquiries', icon: '💬' },
   { label: 'Lucky Wheel', href: '/lucky-wheel', icon: '🎡' },
   { label: 'Reports', href: '/reports', icon: '📈' },
 ];

@@ -31,6 +31,9 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     "Veenus Kleding",
+    "veenus",
+    "veenus clothing",
+    "Veenus sandun",
     "luxury fashion",
     "designer clothing",
     "premium wear",
