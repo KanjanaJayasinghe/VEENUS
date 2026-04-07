@@ -7,28 +7,29 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
-  sendPasswordResetEmail,
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, functions } from './firebase';
 
-async function saveCustomerToFirestore(user: User) {
+async function saveCustomerToFirestore(user: User, extra?: { phone?: string; signInMethod?: string }) {
   const ref = doc(db, 'customers', user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
     await setDoc(ref, {
       name: user.displayName || '',
       email: user.email || '',
-      phone: user.phoneNumber || '',
+      phone: extra?.phone || user.phoneNumber || '',
       address: '',
       city: '',
       postalCode: '',
       country: '',
       totalOrders: 0,
       totalSpent: 0,
+      signInMethod: extra?.signInMethod || 'email',
       createdAt: new Date().toISOString(),
     });
   }
@@ -38,7 +39,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signUp: (email: string, password: string, displayName: string, phone?: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
@@ -70,10 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signUp = async (email: string, password: string, displayName: string) => {
+  const signUp = async (email: string, password: string, displayName: string, phone?: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName });
-    await saveCustomerToFirestore(cred.user);
+    await saveCustomerToFirestore(cred.user, { phone });
   };
 
   const signOut = async () => {
@@ -81,13 +82,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    await sendPasswordResetEmail(auth, email);
+    const sendPasswordReset = httpsCallable(functions, 'sendPasswordResetEmail');
+    await sendPasswordReset({ email });
   };
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    await saveCustomerToFirestore(result.user);
+    await saveCustomerToFirestore(result.user, { signInMethod: 'google' });
   };
 
   return (

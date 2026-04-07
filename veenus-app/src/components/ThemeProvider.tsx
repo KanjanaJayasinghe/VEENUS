@@ -21,8 +21,9 @@ export const useTheme = () => useContext(ThemeContext);
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
   useEffect(() => {
+    // Only switch to light if user explicitly chose it before
     const stored = localStorage.getItem('veenus-theme') as Theme | null;
-    const initial = stored || 'dark';
+    const initial = stored === 'light' ? 'light' : 'dark';
     setTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
   }, []);

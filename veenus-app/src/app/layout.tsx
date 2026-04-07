@@ -165,11 +165,16 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" data-theme="dark">
       <head>
-        <link rel="preload" href="/hero1.webp" as="image" type="image/webp" />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('veenus-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light')}})()` }} />
+        <link rel="preload" href="/hero-enhanced.webp" as="image" type="image/webp" media="(min-width: 768px)" />
+        <link rel="preload" href="/hero-enhanced-mobile.webp" as="image" type="image/webp" media="(max-width: 767px)" />
         <link rel="preload" href="/hero2.webp" as="image" type="image/webp" />
         <link rel="preload" href="/hero3.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero-dsc4143.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/crafted.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/dsc4143-crafted.webp" as="image" type="image/webp" />
         <link rel="preload" href="/background-optimized.webp" as="image" type="image/webp" />
         <meta name="theme-color" content="#0a0a0a" />
         <script

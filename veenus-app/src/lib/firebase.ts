@@ -1,10 +1,12 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
+import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCSzZlEvZb_N0x326t06QHsZpgK-m9ilX4",
-  authDomain: "veenuskleding.com",
+  authDomain: "veenuskleding-802f1.firebaseapp.com",
   projectId: "veenuskleding-802f1",
   storageBucket: "veenuskleding-802f1.firebasestorage.app",
   messagingSenderId: "1050257282594",
@@ -15,3 +17,5 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
+export const functions = getFunctions(app);

@@ -125,9 +125,17 @@ interface OrderDoc {
   id: string;
   orderNumber: string;
   customerId: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  customerCity?: string;
+  customerPostalCode?: string;
+  customerCountry?: string;
   items: {
     id: string;
     productId: string;
+    productName?: string;
     size: string;
     color: ProductColor;
     quantity: number;
@@ -135,10 +143,14 @@ interface OrderDoc {
   }[];
   subtotal: number;
   shipping: number;
+  discount?: number;
   tax: number;
   total: number;
   status: string;
   paymentStatus: string;
+  paymentMethod?: string;
+  bankSlipUrl?: string;
+  promoCode?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -306,14 +318,51 @@ export async function getOrders(): Promise<Order[]> {
 
   return orderSnap.docs.map((d) => {
     const data = d.data() as OrderDoc;
+
+    // Resolve customer: try by customerId first, then fall back to inline fields
+    let customer: Customer;
+    if (data.customerId) {
+      customer = customers.find((c) => c.id === data.customerId) || {
+        id: data.customerId,
+        name: data.customerName || 'Unknown',
+        email: data.customerEmail || '',
+        phone: data.customerPhone || '',
+        address: data.customerAddress || '',
+        city: data.customerCity || '',
+        postalCode: data.customerPostalCode || '',
+        country: data.customerCountry || '',
+        totalOrders: 0,
+        totalSpent: 0,
+        createdAt: data.createdAt,
+      };
+    } else {
+      customer = {
+        id: '',
+        name: data.customerName || 'Guest',
+        email: data.customerEmail || '',
+        phone: data.customerPhone || '',
+        address: data.customerAddress || '',
+        city: data.customerCity || '',
+        postalCode: data.customerPostalCode || '',
+        country: data.customerCountry || '',
+        totalOrders: 0,
+        totalSpent: 0,
+        createdAt: data.createdAt,
+      };
+    }
+
     return {
       ...data,
       id: d.id,
-      customer: customers.find((c) => c.id === data.customerId) || { id: '', name: 'Unknown', email: '', phone: '', address: '', city: '', postalCode: '', country: '', totalOrders: 0, totalSpent: 0, createdAt: '' },
+      customer,
       items: data.items.map((item) => ({
         ...item,
-        product: products.find((p) => p.id === item.productId) || { id: '', name: 'Unknown', slug: '', price: 0, description: '', shortDescription: '', images: [], category: { id: '', name: '', slug: '', description: '', image: '' }, sizes: [], colors: [], material: '', careInstructions: [], featured: false, new: false, bestseller: false },
+        product: products.find((p) => p.id === item.productId) || { id: item.productId, name: item.productName || 'Unknown', slug: '', price: 0, description: '', shortDescription: '', images: [], category: { id: '', name: '', slug: '', description: '', image: '' }, sizes: [], colors: [], material: '', careInstructions: [], featured: false, new: false, bestseller: false },
       })) as OrderItem[],
+      discount: data.discount || 0,
+      paymentMethod: data.paymentMethod || 'cod',
+      bankSlipUrl: data.bankSlipUrl || '',
+      promoCode: data.promoCode || '',
     } as Order;
   });
 }
@@ -331,9 +380,17 @@ export async function saveOrder(order: Order): Promise<void> {
   const orderDoc: Omit<OrderDoc, 'id'> = {
     orderNumber: order.orderNumber,
     customerId: order.customer.id,
+    customerName: order.customer.name,
+    customerEmail: order.customer.email,
+    customerPhone: order.customer.phone,
+    customerAddress: order.customer.address,
+    customerCity: order.customer.city,
+    customerPostalCode: order.customer.postalCode,
+    customerCountry: order.customer.country,
     items: order.items.map((item) => ({
       id: item.id,
       productId: item.product.id,
+      productName: item.product.name,
       size: item.size,
       color: item.color,
       quantity: item.quantity,
@@ -341,10 +398,14 @@ export async function saveOrder(order: Order): Promise<void> {
     })),
     subtotal: order.subtotal,
     shipping: order.shipping,
+    discount: order.discount,
     tax: order.tax,
     total: order.total,
     status: order.status,
     paymentStatus: order.paymentStatus,
+    paymentMethod: order.paymentMethod,
+    bankSlipUrl: order.bankSlipUrl,
+    promoCode: order.promoCode,
     notes: order.notes,
     createdAt: order.createdAt,
     updatedAt: new Date().toISOString().split('T')[0],
@@ -367,6 +428,27 @@ export async function deleteOrder(id: string): Promise<void> {
 // ─── Lucky Wheel Config ───
 
 import { LuckyWheelConfig, WheelSegment, PromoCode } from '@/types';
+
+// ─── Shipping Settings ───
+
+export interface ShippingSettings {
+  sriLanka: number;
+  netherlands: number;
+}
+
+export async function getShippingSettings(): Promise<ShippingSettings> {
+  const docRef = doc(db, 'settings', 'shipping');
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    const data = snap.data();
+    return { sriLanka: data.sriLanka ?? 500, netherlands: data.netherlands ?? 1500 };
+  }
+  return { sriLanka: 500, netherlands: 1500 };
+}
+
+export async function saveShippingSettings(settings: ShippingSettings): Promise<void> {
+  await setDoc(doc(db, 'settings', 'shipping'), settings);
+}
 
 const DEFAULT_SEGMENTS: WheelSegment[] = [
   { id: '1', label: 'Try Again', type: 'try_again', value: 0, color: '#1a1a1a', textColor: '#D4AF37' },

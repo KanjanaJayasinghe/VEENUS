@@ -75,6 +75,7 @@ export interface Customer {
   country: string;
   totalOrders: number;
   totalSpent: number;
+  signInMethod?: string;
   createdAt: string;
 }
 
@@ -85,10 +86,14 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   shipping: number;
+  discount: number;
   tax: number;
   total: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
+  paymentMethod: string;
+  bankSlipUrl: string;
+  promoCode: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

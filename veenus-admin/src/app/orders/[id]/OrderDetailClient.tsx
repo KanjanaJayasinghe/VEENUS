@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { getOrders, updateOrderStatus } from '@/lib/firestore';
 import { OrderStatus, Order } from '@/types';
 
-export default function OrderDetailClient({ params }: { params: { id: string } }) {
-  const router = useRouter();
+export default function OrderDetailClient({ params, onBack }: { params: { id: string }; onBack?: () => void }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>('pending');
@@ -39,7 +37,7 @@ export default function OrderDetailClient({ params }: { params: { id: string } }
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <p className="text-[var(--text-dim)] text-lg mb-4">Order not found</p>
-          <button onClick={() => router.push('/orders')} className="btn-gold">Back to Orders</button>
+          <button onClick={onBack} className="btn-gold">Back to Orders</button>
         </div>
       </div>
     );
@@ -76,7 +74,7 @@ export default function OrderDetailClient({ params }: { params: { id: string } }
             })}
           </p>
         </div>
-        <button onClick={() => router.push('/orders')} className="btn-outline">← Back to Orders</button>
+        <button onClick={onBack} className="btn-outline">← Back to Orders</button>
       </div>
 
       {saved && (
@@ -159,12 +157,20 @@ export default function OrderDetailClient({ params }: { params: { id: string } }
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--text-secondary)]">Shipping</span>
-                <span className="text-[var(--text-primary)]">{order.shipping === 0 ? 'Free' : `LKR ${order.shipping}`}</span>
+                <span className="text-[var(--text-primary)]">{order.shipping === 0 ? 'Free' : `LKR ${order.shipping.toLocaleString()}`}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-secondary)]">Tax</span>
-                <span className="text-[var(--text-primary)]">LKR {order.tax.toLocaleString()}</span>
-              </div>
+              {order.discount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-400">Discount</span>
+                  <span className="text-green-400">-LKR {order.discount.toLocaleString()}</span>
+                </div>
+              )}
+              {order.tax > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--text-secondary)]">Tax</span>
+                  <span className="text-[var(--text-primary)]">LKR {order.tax.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-base font-semibold pt-2 border-t border-[var(--border-light)]">
                 <span className="text-[var(--text-primary)]">Total</span>
                 <span className="text-gradient-gold">LKR {order.total.toLocaleString()}</span>
@@ -208,14 +214,37 @@ export default function OrderDetailClient({ params }: { params: { id: string } }
                 <span className="text-xs text-[var(--text-muted)]">Current Status</span>
                 <span className={`badge ${statusColors[currentStatus]}`}>{currentStatus}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-[var(--text-muted)]">Payment</span>
                 <span className={`badge ${order.paymentStatus === 'paid' ? 'badge-success' : order.paymentStatus === 'refunded' ? 'badge-neutral' : 'badge-warning'}`}>
                   {order.paymentStatus}
                 </span>
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[var(--text-muted)]">Method</span>
+                <span className="text-xs text-[var(--text-secondary)]">
+                  {order.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Cash on Delivery'}
+                </span>
+              </div>
+              {order.promoCode && (
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-[var(--text-muted)]">Promo Code</span>
+                  <span className="text-xs text-green-400 font-mono">{order.promoCode}</span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Bank Slip */}
+          {order.paymentMethod === 'bank_transfer' && order.bankSlipUrl && (
+            <div className="admin-card p-6">
+              <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">Bank Transfer Slip</h3>
+              <a href={order.bankSlipUrl} target="_blank" rel="noopener noreferrer" className="block">
+                <img src={order.bankSlipUrl} alt="Bank slip" className="w-full rounded-lg border border-[var(--border-light)] hover:opacity-80 transition-opacity" />
+              </a>
+              <p className="text-xs text-[var(--text-dim)] mt-2">Click to view full size</p>
+            </div>
+          )}
 
           {/* Customer Info */}
           <div className="admin-card p-6">

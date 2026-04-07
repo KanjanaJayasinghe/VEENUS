@@ -16,6 +16,7 @@ export interface Product {
   featured: boolean;
   new: boolean;
   bestseller: boolean;
+  stock?: number;
 }
 
 export interface ProductColor {
@@ -92,4 +93,44 @@ export interface PromoCode {
   used: boolean;
   createdAt: string;
   expiresAt: string;
+}
+
+// ─── Order Types ───
+
+export type PaymentMethod = 'cod' | 'bank_transfer';
+
+export interface OrderItemData {
+  productId: string;
+  productName: string;
+  size: string;
+  color: ProductColor;
+  quantity: number;
+  price: number;
+}
+
+export interface ShippingSettings {
+  sriLanka: number;
+  netherlands: number;
+}
+
+export interface PlaceOrderData {
+  customer: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  items: OrderItemData[];
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
+  paymentMethod: PaymentMethod;
+  bankSlipUrl?: string;
+  promoCode?: string;
+  notes?: string;
 }

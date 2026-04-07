@@ -5,13 +5,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "redirects": [
-      {
-        "source": "**",
-        "destination": "https://veenuskleding.com",
-        "type": 301
-      }
     ]
   }
 }

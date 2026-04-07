@@ -1,20 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCustomers, getOrders } from '@/lib/firestore';
-import { Customer, Order } from '@/types';
+import { getCustomers } from '@/lib/firestore';
+import { Customer } from '@/types';
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'orders' | 'spent' | 'recent'>('recent');
 
   useEffect(() => {
-    Promise.all([getCustomers(), getOrders()]).then(([custData, orderData]) => {
+    getCustomers().then((custData) => {
       setCustomers(custData);
-      setOrders(orderData);
       setLoading(false);
     }).catch((err) => {
       console.error('Firestore load failed:', err);
@@ -108,7 +106,9 @@ export default function CustomersPage() {
             <thead>
               <tr>
                 <th>Customer</th>
+                <th>Phone</th>
                 <th>Location</th>
+                <th>Sign-in</th>
                 <th>Orders</th>
                 <th>Total Spent</th>
                 <th>Joined</th>
@@ -117,8 +117,6 @@ export default function CustomersPage() {
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => {
-                const customerOrders = orders.filter((o) => o.customer.id === customer.id);
-                const lastOrder = customerOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
                 const isVip = customer.totalOrders >= 10 || customer.totalSpent >= 30000;
 
                 return (
@@ -137,11 +135,24 @@ export default function CustomersPage() {
                         </div>
                       </div>
                     </td>
+                    <td className="text-sm text-[var(--text-secondary)]">{customer.phone || '—'}</td>
                     <td>
                       <div>
-                        <p className="text-sm text-[var(--text-heading)]">{customer.city}</p>
+                        <p className="text-sm text-[var(--text-heading)]">{customer.city || '—'}</p>
                         <p className="text-xs text-[var(--text-dim)]">{customer.country}</p>
                       </div>
+                    </td>
+                    <td>
+                      {customer.signInMethod === 'google' ? (
+                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400">
+                          <svg className="w-3 h-3" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/></svg>
+                          Google
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-400">
+                          ✉ Email
+                        </span>
+                      )}
                     </td>
                     <td className="text-sm text-[var(--text-secondary)]">{customer.totalOrders}</td>
                     <td className="text-sm font-medium text-gold-400">LKR {customer.totalSpent.toLocaleString()}</td>

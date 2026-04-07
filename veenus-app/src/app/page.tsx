@@ -145,10 +145,11 @@ export default function Home() {
             <div className="relative">
               <div className="aspect-[4/5] relative overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80"
+                  src="/crafted.webp"
                   alt="Veenus Fashion"
                   fill
                   className="object-cover"
+                  priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 {/* Gold frame overlay */}
@@ -158,10 +159,11 @@ export default function Home() {
               {/* Floating accent image */}
               <div className="absolute -bottom-10 -right-10 w-56 h-56 hidden lg:block" style={{ boxShadow: 'var(--card-shadow-hover)' }}>
                 <Image
-                  src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=80"
+                  src="/dsc4143-crafted.webp"
                   alt="Fashion Detail"
                   fill
                   className="object-cover"
+                  priority
                   sizes="250px"
                 />
                 <div className="absolute inset-3 border border-gold-500/30 rounded-lg" />

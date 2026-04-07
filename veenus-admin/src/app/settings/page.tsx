@@ -1,17 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getShippingSettings, saveShippingSettings } from '@/lib/firestore';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'general' | 'account' | 'notifications' | 'appearance'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'shipping' | 'account' | 'notifications' | 'appearance'>('general');
   const [saved, setSaved] = useState(false);
 
   const [storeName, setStoreName] = useState('Veenus');
   const [storeEmail, setStoreEmail] = useState('admin@veenus.com');
   const [currency, setCurrency] = useState('LKR');
   const [taxRate, setTaxRate] = useState('20');
-  const [shippingFlat, setShippingFlat] = useState('15');
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState('500');
+
+  const [shippingSriLanka, setShippingSriLanka] = useState('500');
+  const [shippingNetherlands, setShippingNetherlands] = useState('1500');
+  const [shippingLoading, setShippingLoading] = useState(true);
 
   const [adminName, setAdminName] = useState('Veenus Admin');
   const [adminEmail, setAdminEmail] = useState('admin@veenus.com');
@@ -23,13 +26,33 @@ export default function SettingsPage() {
 
   const [accentColor, setAccentColor] = useState('#D4AF37');
 
-  const handleSave = () => {
+  // Load shipping settings from Firestore
+  useEffect(() => {
+    getShippingSettings().then((settings) => {
+      setShippingSriLanka(String(settings.sriLanka));
+      setShippingNetherlands(String(settings.netherlands));
+      setShippingLoading(false);
+    }).catch(() => setShippingLoading(false));
+  }, []);
+
+  const handleSave = async () => {
+    if (activeTab === 'shipping') {
+      try {
+        await saveShippingSettings({
+          sriLanka: Number(shippingSriLanka) || 500,
+          netherlands: Number(shippingNetherlands) || 1500,
+        });
+      } catch (err) {
+        console.error('Failed to save shipping settings:', err);
+      }
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
   const tabs = [
     { key: 'general', label: 'General', icon: '⚙️' },
+    { key: 'shipping', label: 'Shipping', icon: '🚚' },
     { key: 'account', label: 'Account', icon: '👤' },
     { key: 'notifications', label: 'Notifications', icon: '🔔' },
     { key: 'appearance', label: 'Appearance', icon: '🎨' },
@@ -99,21 +122,38 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <hr className="border-[var(--border-light)]" />
-              <h3 className="text-lg font-semibold text-[var(--text-primary)]">Shipping</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Flat Shipping Rate (LKR)</label>
-                  <input type="number" value={shippingFlat} onChange={(e) => setShippingFlat(e.target.value)} className="admin-input w-full" />
-                </div>
-                <div>
-                  <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Free Shipping Threshold (LKR)</label>
-                  <input type="number" value={freeShippingThreshold} onChange={(e) => setFreeShippingThreshold(e.target.value)} className="admin-input w-full" />
-                </div>
-              </div>
-
               <div className="flex justify-end pt-2">
                 <button onClick={handleSave} className="btn-gold">Save Changes</button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'shipping' && (
+            <div className="admin-card p-6 space-y-6">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">Shipping Rates</h3>
+              <p className="text-sm text-[var(--text-muted)]">Configure shipping charges by destination. These rates are used on the customer ordering page.</p>
+
+              {shippingLoading ? (
+                <div className="flex items-center justify-center h-32">
+                  <div className="w-6 h-6 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm text-[var(--text-secondary)] mb-1.5">Sri Lanka (LKR)</label>
+                    <input type="number" value={shippingSriLanka} onChange={(e) => setShippingSriLanka(e.target.value)} className="admin-input w-full" />
+                    <p className="text-xs text-[var(--text-dim)] mt-1">Domestic shipping rate</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[var(--text-secondary)] mb-1.5">International (LKR)</label>
+                    <input type="number" value={shippingNetherlands} onChange={(e) => setShippingNetherlands(e.target.value)} className="admin-input w-full" />
+                    <p className="text-xs text-[var(--text-dim)] mt-1">Netherlands &amp; all international orders</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end pt-2">
+                <button onClick={handleSave} className="btn-gold">Save Shipping Rates</button>
               </div>
             </div>
           )}

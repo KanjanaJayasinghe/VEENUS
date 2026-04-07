@@ -6,7 +6,8 @@ import Link from 'next/link';
 
 const heroSlides = [
   {
-    image: '/hero1.webp',
+    image: '/hero-enhanced.webp',
+    imageMobile: '/hero-enhanced-mobile.webp',
     title: 'Noir Elegance',
     subtitle: 'New Collection',
     description: 'Discover the art of timeless sophistication in every thread',
@@ -15,6 +16,7 @@ const heroSlides = [
   },
   {
     image: '/hero2.webp',
+    imageMobile: '',
     title: 'Golden Hour',
     subtitle: 'Latest Arrivals',
     description: 'Embrace the warmth of luxury woven in gold',
@@ -23,11 +25,21 @@ const heroSlides = [
   },
   {
     image: '/hero3.webp',
+    imageMobile: '',
     title: 'Midnight Royale',
     subtitle: 'Exclusive Collection',
     description: 'For those who command attention & radiate power',
     cta: 'View Collection',
     href: '/collections',
+  },
+  {
+    image: '/hero-dsc4143.webp',
+    imageMobile: '/hero-dsc4143.webp',
+    title: 'Eternal Grace',
+    subtitle: 'Featured Look',
+    description: 'Crafted for the woman who moves the world with elegance',
+    cta: 'Shop the Look',
+    href: '/products',
   },
 ];
 
@@ -68,12 +80,24 @@ export default function HeroSection() {
           }`}
           style={{ willChange: 'opacity, transform' }}
         >
+          {/* Mobile image (shown on small screens if available) */}
+          {slide.imageMobile && (
+            <Image
+              src={slide.imageMobile}
+              alt={slide.title}
+              fill
+              className="object-cover block md:hidden"
+              priority={true}
+              sizes="100vw"
+            />
+          )}
+          {/* Desktop image (always rendered; on mobile hidden only if mobile variant exists) */}
           <Image
             src={slide.image}
             alt={slide.title}
             fill
-            className="object-cover"
-            priority
+            className={`object-cover ${slide.imageMobile ? 'hidden md:block' : ''}`}
+            priority={true}
             sizes="100vw"
           />
         </div>

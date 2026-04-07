@@ -150,7 +150,7 @@ export default function NewProductPage() {
         category: category || { id: '', name: '', slug: '', description: '', image: '' },
         collection: col,
         sizes: formData.sizes,
-        colors: formData.colors,
+        colors: formData.colors.map(c => ({ name: c.name || '', hex: c.hex })),
         material: formData.material,
         careInstructions: formData.careInstructions.filter(Boolean),
         featured: formData.featured,

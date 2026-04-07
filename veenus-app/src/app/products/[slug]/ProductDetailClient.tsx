@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductCard } from '@/components';
@@ -10,12 +10,14 @@ import { getProductBySlug } from '@/lib/firestore';
 
 export default function ProductDetailClient({ slug: slugProp }: { slug?: string } = {}) {
   const params = useParams();
+  const router = useRouter();
   const slug = slugProp || (params.slug as string);
   const { products, loading } = useStore();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-LK', {
@@ -313,6 +315,34 @@ export default function ProductDetailClient({ slug: slugProp }: { slug?: string 
                 </div>
               </div>
 
+              {/* Quantity Selector */}
+              <div className="mb-6 sm:mb-10">
+                <h3 className="text-[11px] uppercase tracking-[0.3em] text-luxury-cream/60 mb-3 sm:mb-5">
+                  Quantity
+                </h3>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-11 h-11 border border-gold-800/25 text-luxury-cream/60 hover:border-gold-500/50 hover:text-luxury-cream flex items-center justify-center transition-all duration-300"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <span className="w-14 h-11 border border-gold-800/25 flex items-center justify-center text-luxury-cream text-sm">{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                    className="w-11 h-11 border border-gold-800/25 text-luxury-cream/60 hover:border-gold-500/50 hover:text-luxury-cream flex items-center justify-center transition-all duration-300"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
                 <button className="btn-primary flex-1">
@@ -321,9 +351,19 @@ export default function ProductDetailClient({ slug: slugProp }: { slug?: string 
                   </svg>
                   Add to Wishlist
                 </button>
-                <Link href="/orders" className="btn-outline flex-1 text-center">
+                <button
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    params.set('product', product.id);
+                    if (selectedSize) params.set('size', selectedSize);
+                    params.set('color', product.colors[selectedColor].name);
+                    params.set('quantity', quantity.toString());
+                    router.push(`/orders?${params.toString()}`);
+                  }}
+                  className="btn-outline flex-1 text-center"
+                >
                   Order This Piece
-                </Link>
+                </button>
               </div>
 
               {/* Product Details */}

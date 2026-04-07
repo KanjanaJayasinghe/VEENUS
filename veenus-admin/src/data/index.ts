@@ -531,8 +531,8 @@ export const orders: Order[] = [
       { id: 'oi-1', product: products[0], size: 'S', color: products[0].colors[0], quantity: 1, price: 2850 },
       { id: 'oi-2', product: products[3], size: 'One Size', color: products[3].colors[0], quantity: 1, price: 890 },
     ],
-    subtotal: 3740, shipping: 0, tax: 374, total: 4114,
-    status: 'delivered', paymentStatus: 'paid',
+    subtotal: 3740, shipping: 0, discount: 0, tax: 374, total: 4114,
+    status: 'delivered', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-01', updatedAt: '2026-03-06',
   },
   {
@@ -542,8 +542,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-3', product: products[4], size: 'L', color: products[4].colors[0], quantity: 1, price: 2400 },
     ],
-    subtotal: 2400, shipping: 50, tax: 240, total: 2690,
-    status: 'shipped', paymentStatus: 'paid',
+    subtotal: 2400, shipping: 50, discount: 0, tax: 240, total: 2690,
+    status: 'shipped', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-03', updatedAt: '2026-03-08',
   },
   {
@@ -554,8 +554,8 @@ export const orders: Order[] = [
       { id: 'oi-4', product: products[6], size: 'M', color: products[6].colors[0], quantity: 1, price: 1650 },
       { id: 'oi-5', product: products[7], size: 'M', color: products[7].colors[0], quantity: 1, price: 320 },
     ],
-    subtotal: 1970, shipping: 35, tax: 197, total: 2202,
-    status: 'processing', paymentStatus: 'paid',
+    subtotal: 1970, shipping: 35, discount: 0, tax: 197, total: 2202,
+    status: 'processing', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-05', updatedAt: '2026-03-07',
   },
   {
@@ -567,8 +567,8 @@ export const orders: Order[] = [
       { id: 'oi-7', product: products[8], size: 'XL', color: products[8].colors[0], quantity: 1, price: 2200 },
       { id: 'oi-8', product: products[11], size: 'Adjustable', color: products[11].colors[0], quantity: 2, price: 360 },
     ],
-    subtotal: 6060, shipping: 0, tax: 606, total: 6666,
-    status: 'delivered', paymentStatus: 'paid',
+    subtotal: 6060, shipping: 0, discount: 0, tax: 606, total: 6666,
+    status: 'delivered', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-02-28', updatedAt: '2026-03-05',
   },
   {
@@ -578,8 +578,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-9', product: products[5], size: 'S', color: products[5].colors[0], quantity: 2, price: 1500 },
     ],
-    subtotal: 1500, shipping: 45, tax: 150, total: 1695,
-    status: 'confirmed', paymentStatus: 'paid',
+    subtotal: 1500, shipping: 45, discount: 0, tax: 150, total: 1695,
+    status: 'confirmed', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-08', updatedAt: '2026-03-08',
   },
   {
@@ -590,8 +590,8 @@ export const orders: Order[] = [
       { id: 'oi-10', product: products[1], size: 'M', color: products[1].colors[0], quantity: 1, price: 1850 },
       { id: 'oi-11', product: products[10], size: 'M', color: products[10].colors[0], quantity: 1, price: 1450 },
     ],
-    subtotal: 3300, shipping: 60, tax: 330, total: 3690,
-    status: 'pending', paymentStatus: 'pending',
+    subtotal: 3300, shipping: 60, discount: 0, tax: 330, total: 3690,
+    status: 'pending', paymentStatus: 'pending', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-10', updatedAt: '2026-03-10',
   },
   {
@@ -603,8 +603,8 @@ export const orders: Order[] = [
       { id: 'oi-13', product: products[9], size: 'One Size', color: products[9].colors[0], quantity: 1, price: 1200 },
       { id: 'oi-14', product: products[3], size: 'One Size', color: products[3].colors[1], quantity: 1, price: 890 },
     ],
-    subtotal: 4940, shipping: 0, tax: 494, total: 5434,
-    status: 'delivered', paymentStatus: 'paid',
+    subtotal: 4940, shipping: 0, discount: 0, tax: 494, total: 5434,
+    status: 'delivered', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-02-25', updatedAt: '2026-03-02',
   },
   {
@@ -614,8 +614,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-15', product: products[5], size: 'L', color: products[5].colors[1], quantity: 1, price: 750 },
     ],
-    subtotal: 750, shipping: 55, tax: 75, total: 880,
-    status: 'shipped', paymentStatus: 'paid',
+    subtotal: 750, shipping: 55, discount: 0, tax: 75, total: 880,
+    status: 'shipped', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-07', updatedAt: '2026-03-09',
   },
   {
@@ -626,8 +626,8 @@ export const orders: Order[] = [
       { id: 'oi-16', product: products[6], size: 'S', color: products[6].colors[1], quantity: 1, price: 1650 },
       { id: 'oi-17', product: products[7], size: 'S', color: products[7].colors[1], quantity: 1, price: 320 },
     ],
-    subtotal: 1970, shipping: 70, tax: 197, total: 2237,
-    status: 'processing', paymentStatus: 'paid',
+    subtotal: 1970, shipping: 70, discount: 0, tax: 197, total: 2237,
+    status: 'processing', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-09', updatedAt: '2026-03-10',
   },
   {
@@ -637,8 +637,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-18', product: products[4], size: 'M', color: products[4].colors[1], quantity: 1, price: 2400 },
     ],
-    subtotal: 2400, shipping: 50, tax: 240, total: 2690,
-    status: 'cancelled', paymentStatus: 'refunded',
+    subtotal: 2400, shipping: 50, discount: 0, tax: 240, total: 2690,
+    status: 'cancelled', paymentStatus: 'refunded', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-04', updatedAt: '2026-03-06',
   },
   {
@@ -648,8 +648,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-19', product: products[10], size: 'S', color: products[10].colors[1], quantity: 1, price: 1450 },
     ],
-    subtotal: 1450, shipping: 0, tax: 145, total: 1595,
-    status: 'delivered', paymentStatus: 'paid',
+    subtotal: 1450, shipping: 0, discount: 0, tax: 145, total: 1595,
+    status: 'delivered', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-02-20', updatedAt: '2026-02-26',
   },
   {
@@ -660,8 +660,8 @@ export const orders: Order[] = [
       { id: 'oi-20', product: products[1], size: 'XL', color: products[1].colors[1], quantity: 1, price: 1850 },
       { id: 'oi-21', product: products[8], size: 'XL', color: products[8].colors[1], quantity: 1, price: 2200 },
     ],
-    subtotal: 4050, shipping: 0, tax: 405, total: 4455,
-    status: 'delivered', paymentStatus: 'paid',
+    subtotal: 4050, shipping: 0, discount: 0, tax: 405, total: 4455,
+    status: 'delivered', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-02-15', updatedAt: '2026-02-22',
   },
   {
@@ -671,8 +671,8 @@ export const orders: Order[] = [
     items: [
       { id: 'oi-22', product: products[2], size: 'S', color: products[2].colors[1], quantity: 1, price: 3500 },
     ],
-    subtotal: 3500, shipping: 0, tax: 350, total: 3850,
-    status: 'shipped', paymentStatus: 'paid',
+    subtotal: 3500, shipping: 0, discount: 0, tax: 350, total: 3850,
+    status: 'shipped', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-11', updatedAt: '2026-03-12',
   },
   {
@@ -683,8 +683,8 @@ export const orders: Order[] = [
       { id: 'oi-23', product: products[9], size: 'One Size', color: products[9].colors[1], quantity: 1, price: 1200 },
       { id: 'oi-24', product: products[11], size: 'Adjustable', color: products[11].colors[1], quantity: 3, price: 540 },
     ],
-    subtotal: 1740, shipping: 45, tax: 174, total: 1959,
-    status: 'pending', paymentStatus: 'pending',
+    subtotal: 1740, shipping: 45, discount: 0, tax: 174, total: 1959,
+    status: 'pending', paymentStatus: 'pending', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-12', updatedAt: '2026-03-12',
   },
   {
@@ -695,8 +695,8 @@ export const orders: Order[] = [
       { id: 'oi-25', product: products[0], size: 'XS', color: products[0].colors[0], quantity: 1, price: 2850 },
       { id: 'oi-26', product: products[5], size: 'XS', color: products[5].colors[2], quantity: 1, price: 750 },
     ],
-    subtotal: 3600, shipping: 70, tax: 360, total: 4030,
-    status: 'confirmed', paymentStatus: 'paid',
+    subtotal: 3600, shipping: 70, discount: 0, tax: 360, total: 4030,
+    status: 'confirmed', paymentStatus: 'paid', paymentMethod: 'cod', bankSlipUrl: '', promoCode: '',
     createdAt: '2026-03-11', updatedAt: '2026-03-12',
   },
 ];

@@ -5,6 +5,28 @@ import { useRouter } from 'next/navigation';
 import { getProducts, saveProduct, deleteProduct, uploadProductImages } from '@/lib/firestore';
 import { Product, Category, Collection } from '@/types';
 
+function hexToColorName(hex: string): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  const names: [number, number, number, string][] = [
+    [0,0,0,'Black'],[255,255,255,'White'],[255,0,0,'Red'],[0,128,0,'Green'],[0,0,255,'Blue'],
+    [255,255,0,'Yellow'],[255,165,0,'Orange'],[128,0,128,'Purple'],[255,192,203,'Pink'],
+    [165,42,42,'Brown'],[128,128,128,'Gray'],[0,128,128,'Teal'],[0,0,128,'Navy'],
+    [128,0,0,'Maroon'],[0,255,255,'Cyan'],[255,215,0,'Gold'],[192,192,192,'Silver'],
+    [245,245,220,'Beige'],[75,0,130,'Indigo'],[255,127,80,'Coral'],[240,128,128,'Light Coral'],
+    [0,100,0,'Dark Green'],[139,0,0,'Dark Red'],[70,130,180,'Steel Blue'],[188,143,143,'Rosy Brown'],
+  ];
+  let closest = 'Custom';
+  let minDist = Infinity;
+  for (const [cr, cg, cb, name] of names) {
+    const dist = Math.sqrt((r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2);
+    if (dist < minDist) { minDist = dist; closest = name; }
+  }
+  return closest;
+}
+
 export default function ProductEditClient({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
@@ -164,7 +186,7 @@ export default function ProductEditClient({ params }: { params: { slug: string }
         category: category || product!.category,
         collection: col,
         sizes: formData.sizes,
-        colors: formData.colors,
+        colors: formData.colors.map(c => ({ name: c.name || hexToColorName(c.hex), hex: c.hex })),
         material: formData.material,
         careInstructions: formData.careInstructions.filter(Boolean),
         featured: formData.featured,

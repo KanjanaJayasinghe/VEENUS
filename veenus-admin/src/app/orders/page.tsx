@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { getOrders } from '@/lib/firestore';
 import { OrderStatus, Order } from '@/types';
+import OrderDetailClient from './[id]/OrderDetailClient';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -11,6 +11,7 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPayment, setFilterPayment] = useState<string>('all');
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     getOrders().then((data) => {
@@ -54,7 +55,14 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {loading && (
+      {/* Order Detail View */}
+      {selectedOrderId && (
+        <OrderDetailClient
+          params={{ id: selectedOrderId }}
+          onBack={() => setSelectedOrderId(null)}
+        />
+      )}
+      {loading && !selectedOrderId && (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -62,7 +70,7 @@ export default function OrdersPage() {
           </div>
         </div>
       )}
-      {!loading && (<>
+      {!loading && !selectedOrderId && (<>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -145,6 +153,7 @@ export default function OrdersPage() {
                 <th>Total</th>
                 <th>Status</th>
                 <th>Payment</th>
+                <th>Method</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -172,6 +181,9 @@ export default function OrdersPage() {
                     <span className={`badge ${paymentColors[order.paymentStatus]}`}>{order.paymentStatus}</span>
                   </td>
                   <td className="text-sm text-[var(--text-secondary)]">
+                    {order.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'COD'}
+                  </td>
+                  <td className="text-sm text-[var(--text-secondary)]">
                     {new Date(order.createdAt).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
@@ -179,8 +191,8 @@ export default function OrdersPage() {
                     })}
                   </td>
                   <td>
-                    <Link
-                      href={`/orders/${order.id}`}
+                    <button
+                      onClick={() => setSelectedOrderId(order.id)}
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--border)] transition-colors text-[var(--text-label)] hover:text-gold-400"
                       title="View Details"
                     >
@@ -188,7 +200,7 @@ export default function OrdersPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -144,7 +144,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
           setLoading(false);
           return;
         }
-        await signUp(email, password, displayName);
+        await signUp(email, password, displayName, phone);
         handleClose();
       }
     } catch (err: unknown) {
